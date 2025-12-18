@@ -1,3 +1,4 @@
+
 {
   "name": "math-workbook-7",
   "private": true,
@@ -14,7 +15,8 @@
     "react-dom": "^18.2.0",
     "react-markdown": "^9.0.1",
     "@google/genai": "^0.1.1",
-    "katex": "^0.16.9"
+    "katex": "^0.16.9",
+    "mathjs": "^14.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
