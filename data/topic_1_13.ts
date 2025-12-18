@@ -10,7 +10,6 @@ export const PROBLEMS_1_13: Problem[] = [
     "problem_type": "fill_in_the_blanks",
     "text_mk": "Пополни ги празните места со влечење на соодветните поими или броеви:",
     "illustration_prompt": "Визуелна репрезентација на степен 9^3 со означени делови: основа (9) и експонент (3).",
-    // Changed "x" to "$x$" so it renders as a math variable, not a multiplication sign. Added latex formatting to numbers.
     "drag_items": ["основа", "експонент", "степен", "$9$", "$3$", "$5$", "$x$", "$0,2$", "$-9$", "$y$"],
     "parts": [
       {
@@ -170,7 +169,7 @@ export const PROBLEMS_1_13: Problem[] = [
     "topic": "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ",
     "problem_type": "text_input",
     "text_mk": "Дадени се бели и сиви жетони. Се формираат степени така што броевите напишани на белите жетони се основа, а броевите на сивите жетони се показател (експонент). Секој жетон со која било боја се користи само еднаш.\n\n**Формирај ја најголемата можна разлика помеѓу вредностите на формираните степени?**",
-    "svg": `<svg viewBox="0 0 600 200" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
+    "svg": `<svg viewBox="0 0 600 240" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
        <g font-family="sans-serif" text-anchor="middle" font-weight="bold" font-size="18">
          
          <!-- Row 1: Exponents (Grey) -->
@@ -183,11 +182,11 @@ export const PROBLEMS_1_13: Problem[] = [
             <g transform="translate(280,0)"><circle cx="30" cy="30" r="24" fill="#CFD8DC" stroke="#546E7A" stroke-width="2" /><text x="30" y="37" fill="#333">4</text></g>
          </g>
 
-         <line x1="20" y1="110" x2="580" y2="110" stroke="#eee" stroke-width="2" stroke-dasharray="5,5" />
+         <line x1="20" y1="120" x2="580" y2="120" stroke="#eee" stroke-width="2" stroke-dasharray="5,5" />
 
          <!-- Row 2: Bases (White) -->
-         <text x="300" y="135" font-size="16" fill="#333" font-weight="bold" letter-spacing="1">ОСНОВИ (БЕЛИ)</text>
-         <g transform="translate(50, 150)">
+         <text x="300" y="150" font-size="16" fill="#333" font-weight="bold" letter-spacing="1">ОСНОВИ (БЕЛИ)</text>
+         <g transform="translate(50, 180)">
             <g transform="translate(0,0)"><circle cx="30" cy="0" r="24" fill="white" stroke="#333" stroke-width="2" /><text x="30" y="7" fill="#333">1</text></g>
             <g transform="translate(70,0)"><circle cx="30" cy="0" r="24" fill="white" stroke="#333" stroke-width="2" /><text x="30" y="7" fill="#333">2</text></g>
             <g transform="translate(140,0)"><circle cx="30" cy="0" r="24" fill="white" stroke="#333" stroke-width="2" /><text x="30" y="7" fill="#333">0</text></g>
@@ -221,34 +220,45 @@ export const PROBLEMS_1_13: Problem[] = [
     "id": "CHALLENGE_1_13_3",
     "category": "challenge",
     "topic": "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ",
-    "problem_type": "text_input",
-    "text_mk": "Со користење на броевите од дадените картички на местата на А и B, се формираат степените $A^2$ и $B^3$. Ако резултатот од операцијата $A^2 - B^3$ е позитивен цел број, запишете ги целите броеви што можат да се постават на местата на А и B (формат: A, B).",
-    "svg": `<svg viewBox="0 0 500 150" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
-       <defs>
-          <filter id="shadowCard" x="-10%" y="-10%" width="120%" height="120%">
-            <feDropShadow dx="2" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.2"/>
-          </filter>
-       </defs>
-       <g font-family="monospace" font-weight="bold" font-size="28" text-anchor="middle">
-         <g transform="translate(50, 20)" filter="url(#shadowCard)">
-            <rect width="80" height="100" rx="8" fill="white" stroke="#333" stroke-width="2"/>
-            <text x="40" y="60" fill="#333">+4</text>
-         </g>
-         <g transform="translate(150, 20)" filter="url(#shadowCard)">
-            <rect width="80" height="100" rx="8" fill="white" stroke="#333" stroke-width="2"/>
-            <text x="40" y="60" fill="#333">+1</text>
-         </g>
-         <g transform="translate(250, 20)" filter="url(#shadowCard)">
-            <rect width="80" height="100" rx="8" fill="white" stroke="#333" stroke-width="2"/>
-            <text x="40" y="60" fill="#333">-2</text>
-         </g>
-         <g transform="translate(350, 20)" filter="url(#shadowCard)">
-            <rect width="80" height="100" rx="8" fill="white" stroke="#333" stroke-width="2"/>
-            <text x="40" y="60" fill="#333">+3</text>
-         </g>
+    "problem_type": "equation_solving",
+    "text_mk": "Со користење на броевите од дадените картички на местата на А и B, се формираат степените $A^2$ и $B^3$. Ако резултатот од операцијата $A^2 - B^3$ е **најголемиот можен** позитивен цел број, запишете ги целите броеви што можат да се постават на местата на А и B.",
+    "svg": `<svg viewBox="0 0 600 100" class="w-full max-w-2xl mx-auto" xmlns="http://www.w3.org/2000/svg">
+       <!-- 4 Blue Cards: +4, +1, -2, +3 -->
+       <g font-family="sans-serif" font-weight="bold" font-size="28" text-anchor="middle" transform="translate(140, 20)">
+          <!-- Card +4 -->
+          <g transform="translate(0, 0)">
+            <rect width="60" height="60" rx="10" fill="#4FC3F7" stroke="#0277BD" stroke-width="2" />
+            <text x="30" y="40" fill="black">+4</text>
+          </g>
+          <!-- Card +1 -->
+          <g transform="translate(80, 0)">
+            <rect width="60" height="60" rx="10" fill="#4FC3F7" stroke="#0277BD" stroke-width="2" />
+            <text x="30" y="40" fill="black">+1</text>
+          </g>
+          <!-- Card -2 -->
+          <g transform="translate(160, 0)">
+            <rect width="60" height="60" rx="10" fill="#4FC3F7" stroke="#0277BD" stroke-width="2" />
+            <text x="30" y="40" fill="black">-2</text>
+          </g>
+          <!-- Card +3 -->
+          <g transform="translate(240, 0)">
+            <rect width="60" height="60" rx="10" fill="#4FC3F7" stroke="#0277BD" stroke-width="2" />
+            <text x="30" y="40" fill="black">+3</text>
+          </g>
        </g>
     </svg>`,
-    "answer": "3, -2" 
+    "parts": [
+      {
+        "part_id": "c3_a",
+        "text_mk": "А =",
+        "answer": "4"
+      },
+      {
+        "part_id": "c3_b",
+        "text_mk": "B =",
+        "answer": "-2"
+      }
+    ]
   },
   {
     "id": "CHALLENGE_1_13_4",
@@ -256,38 +266,64 @@ export const PROBLEMS_1_13: Problem[] = [
     "topic": "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ",
     "problem_type": "text_input",
     "text_mk": "Од 10 складни сини правоаголници, секој со должини на страните $2^5$ cm и $2^6$ cm, е формиран правоаголникот ABCD, така што нивните страни се допираат како што е прикажано на сликата. Според даденото, колкав е периметарот на правоаголникот EFGH во внатрешноста на правоаголникот ABCD, изразен во центиметри?",
-    "svg": `<svg viewBox="0 0 400 300" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
-       <rect x="50" y="50" width="300" height="300" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/> 
+    "svg": `<svg viewBox="0 0 700 300" class="w-full max-w-3xl mx-auto" xmlns="http://www.w3.org/2000/svg">
        
-       <g stroke="white" stroke-width="2" fill="#1976D2">
-         <rect x="50" y="50" width="100" height="50" />
-         <rect x="150" y="50" width="100" height="50" />
-         <rect x="250" y="50" width="100" height="50" />
-
-         <rect x="50" y="100" width="50" height="100" />
-         <rect x="50" y="200" width="50" height="100" />
-
-         <rect x="300" y="100" width="50" height="100" />
-         <rect x="300" y="200" width="50" height="100" />
-
-         <rect x="50" y="300" width="100" height="50" />
-         <rect x="150" y="300" width="100" height="50" />
-         <rect x="250" y="300" width="100" height="50" />
+       <!-- Main Structure -->
+       <!-- Dimensions: 2^5 = 32 units, 2^6 = 64 units. Scaled x2 for SVG: 64px and 128px -->
+       <!-- Outer Rect Size: 512px (4x128) x 256px (4x64) ? No. -->
+       <!-- Left Side: 2 Vertical blocks (64 wide, 256 high total). x=0 -->
+       <g transform="translate(0, 0)" stroke="white" stroke-width="2" fill="#78909C">
+          <rect x="0" y="0" width="64" height="128" />
+          <rect x="0" y="128" width="64" height="128" />
        </g>
 
-       <text x="40" y="45" font-weight="bold" font-size="16">A</text>
-       <text x="360" y="45" font-weight="bold" font-size="16">B</text>
-       <text x="360" y="365" font-weight="bold" font-size="16">C</text>
-       <text x="40" y="365" font-weight="bold" font-size="16">D</text>
+       <!-- Right Side: 2 Vertical blocks. x=448 (64+384) -->
+       <g transform="translate(448, 0)" stroke="white" stroke-width="2" fill="#78909C">
+          <rect x="0" y="0" width="64" height="128" />
+          <rect x="0" y="128" width="64" height="128" />
+       </g>
 
-       <rect x="100" y="100" width="200" height="200" fill="#E3F2FD" stroke="#333" stroke-width="2" stroke-dasharray="4,4" />
-       <text x="110" y="120" font-weight="bold" font-size="14">E</text>
-       <text x="290" y="120" font-weight="bold" font-size="14">F</text>
-       <text x="290" y="290" font-weight="bold" font-size="14">G</text>
-       <text x="110" y="290" font-weight="bold" font-size="14">H</text>
+       <!-- Top Row: 3 Horizontal blocks (128 wide, 64 high). Between the columns. -->
+       <g transform="translate(64, 0)" stroke="white" stroke-width="2" fill="#78909C">
+          <rect x="0" y="0" width="128" height="64" />
+          <rect x="128" y="0" width="128" height="64" />
+          <rect x="256" y="0" width="128" height="64" />
+       </g>
 
-       <text x="200" y="80" text-anchor="middle" fill="white" font-size="12">64</text>
-       <text x="250" y="250" text-anchor="middle" fill="white" font-size="12" transform="rotate(90 250 250)">64</text>
+       <!-- Bottom Row: 3 Horizontal blocks. y=192 (256-64) -->
+       <g transform="translate(64, 192)" stroke="white" stroke-width="2" fill="#78909C">
+          <rect x="0" y="0" width="128" height="64" />
+          <rect x="128" y="0" width="128" height="64" />
+          <rect x="256" y="0" width="128" height="64" />
+       </g>
+
+       <!-- Inner Rectangle EFGH Fill -->
+       <rect x="64" y="64" width="384" height="128" fill="#EEEEEE" />
+
+       <!-- Labels -->
+       <g font-family="serif" font-weight="bold" font-size="20" fill="black">
+          <text x="5" y="275">A</text>
+          <text x="500" y="275">B</text>
+          <text x="500" y="20">C</text>
+          <text x="5" y="20">D</text>
+
+          <text x="70" y="185">E</text>
+          <text x="440" y="185">F</text>
+          <text x="440" y="85">G</text>
+          <text x="70" y="85">H</text>
+       </g>
+
+       <!-- Legend -->
+       <g transform="translate(560, 80)">
+          <!-- Horizontal example -->
+          <rect x="0" y="0" width="60" height="30" fill="#78909C" stroke="black" stroke-width="1" />
+          <text x="70" y="20" font-family="serif" font-size="16">2<tspan dy="-5" font-size="10">5</tspan> cm</text>
+          
+          <!-- Vertical example -->
+          <rect x="0" y="40" width="30" height="60" fill="#78909C" stroke="black" stroke-width="1" />
+          <text x="40" y="75" font-family="serif" font-size="16">2<tspan dy="-5" font-size="10">6</tspan> cm</text>
+       </g>
+
     </svg>`,
     "answer": "512" 
   }
