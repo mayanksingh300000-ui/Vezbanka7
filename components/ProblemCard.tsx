@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Problem } from '../types';
 import LatexRenderer from './LatexRenderer';
 import ProblemBody from './ProblemBody';
+import { checkProblemAnswer } from '../utils/grading';
 
 interface ProblemCardProps {
   problem: Problem;
@@ -31,144 +32,31 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
   };
 
   const checkAnswers = () => {
-    let currentSolvedState = true; // Assume true, prove false
-    const newFeedback: { [key: string]: 'correct' | 'incorrect' } = {};
-
-    // Helper to normalize strings for comparison:
-    // 1. Remove spaces
-    // 2. Lowercase
-    // 3. Replace various dots (·, •) with asterisk * for consistent multiplication check
-    // 4. Remove $ signs (for LaTeX formatted drag items)
-    const normalize = (val: string) => val.replace(/\s+/g, '').toLowerCase().replace(/[·•]/g, '*').replace(/\$/g, '');
-
-    // 1. Check Custom Visual Data Inputs (Value Cards, Interactive Table, Grid Selector)
-    if (problem.custom_visual_data) {
-       if (problem.custom_visual_data.type === 'grid_of_fractions') {
-          // Grid Selector Logic
-          const selectedStr = inputs[problem.id] || '';
-          const selected = selectedStr.split(',').filter(Boolean).sort();
-          const correct = problem.custom_visual_data.correct_items ? [...problem.custom_visual_data.correct_items].sort() : [];
-          
-          const isCorrect = JSON.stringify(selected) === JSON.stringify(correct);
-          
-          if (isCorrect) {
-             newFeedback[problem.id] = 'correct';
-          } else {
-             newFeedback[problem.id] = 'incorrect';
-             currentSolvedState = false;
-          }
-       } else {
-         // Existing Logic for Value Cards / Table
-         let itemsToCheck: any[] = [];
-         if (problem.custom_visual_data.type === 'interactive_table') {
-           itemsToCheck = problem.custom_visual_data.rows.flat().filter((cell: any) => cell.id);
-         } else if (problem.custom_visual_data.items) {
-           itemsToCheck = problem.custom_visual_data.items;
-         }
-
-         itemsToCheck.forEach((item: any) => {
-            const userVal = inputs[item.id] || '';
-            const correctVal = item.answer;
-            
-            if (normalize(userVal) === normalize(correctVal)) {
-               newFeedback[item.id] = 'correct';
-            } else {
-               newFeedback[item.id] = 'incorrect';
-               currentSolvedState = false;
-            }
-         });
-       }
+    // Check if AI assistance is needed for Multiple Choice (if no explicit answer key provided in data)
+    if (problem.options && !problem.answer) {
+       onAskAI(`Дали мојот избор ${selectedOption} е точен за задачата: ${problem.text_mk}`);
+       return;
     }
 
-    // 2. Check Standard Parts
-    if (problem.parts) {
-      if (problem.problem_type === 'fill_in_the_blanks') {
-           // Handle multi-input parts: part.answer should be comma-separated list of answers corresponding to {{}} in order
-           problem.parts.forEach(part => {
-               const answers = part.answer ? part.answer.split(',').map(s => s.trim()) : [];
-               
-               answers.forEach((ans, idx) => {
-                   const inputId = `${part.part_id}_${idx}`;
-                   const userVal = inputs[inputId] || '';
-                   
-                   if (normalize(userVal) === normalize(ans)) {
-                       newFeedback[inputId] = 'correct';
-                   } else {
-                       newFeedback[inputId] = 'incorrect';
-                       currentSolvedState = false;
-                   }
-               });
-           });
-      } else {
-        // Standard single input per part
-        problem.parts.forEach((part) => {
-          const userVal = inputs[part.part_id] || '';
-          const correctVal = part.answer; 
-          
-          if (!correctVal) return; 
+    // Use the utility function to check answers
+    const result = checkProblemAnswer(problem, inputs, selectedOption);
 
-          if (problem.problem_type === 'ordering_of_integers') {
-              // For ordering, we normalize by ensuring comma separation logic is consistent
-              if (normalize(userVal) === normalize(correctVal)) {
-                  newFeedback[part.part_id] = 'correct';
-              } else {
-                  newFeedback[part.part_id] = 'incorrect';
-                  currentSolvedState = false;
-              }
-          } else {
-              if (normalize(userVal) === normalize(correctVal)) {
-                newFeedback[part.part_id] = 'correct';
-              } else {
-                newFeedback[part.part_id] = 'incorrect';
-                currentSolvedState = false;
-              }
-          }
-        });
-      }
-    } 
-    // 3. Check Multiple Choice
-    else if (problem.options) {
-      const correctOption = problem.answer;
-      if (!correctOption) {
-        onAskAI(`Дали мојот избор ${selectedOption} е точен за задачата: ${problem.text_mk}`);
-        return;
-      }
-
-      if (selectedOption === correctOption) {
-        setGeneralFeedback('correct');
-      } else {
-        setGeneralFeedback('incorrect');
-        currentSolvedState = false;
-      }
-    }
-    // 4. Check Single Input (only if no parts and no options AND not a grid selector)
-    else if (!problem.parts && !problem.options && problem.answer && problem.custom_visual_data?.type !== 'grid_of_fractions') {
-      const userVal = inputs[problem.id] || '';
-      const correctVal = problem.answer;
-      
-      if (normalize(userVal) === normalize(correctVal)) {
-        setGeneralFeedback('correct');
-      } else {
-        setGeneralFeedback('incorrect');
-        currentSolvedState = false;
-      }
-    }
-    // 5. Special check for Grid Selector single problem (Answer handled via feedback map, but verify solving state)
-    else if (problem.custom_visual_data?.type === 'grid_of_fractions') {
-        if (newFeedback[problem.id] === 'correct') {
-            setGeneralFeedback('correct');
-        } else {
-            setGeneralFeedback('incorrect');
-            currentSolvedState = false;
-        }
+    setFeedback(prev => ({...prev, ...result.feedback}));
+    
+    // Only update general feedback if it's explicitly set by the grader
+    if (result.generalFeedback) {
+        setGeneralFeedback(result.generalFeedback);
     }
 
-    setFeedback(prev => ({...prev, ...newFeedback}));
-
-    if (currentSolvedState) {
+    if (result.isCorrect) {
         setIsSolved(true);
         if (onProblemSolved) {
             onProblemSolved(problem.id);
+        }
+    } else {
+        // If simply incorrect without specific general feedback, ensure we show error
+        if (!result.generalFeedback && (!problem.parts || problem.parts.length === 0) && !problem.custom_visual_data) {
+             setGeneralFeedback('incorrect');
         }
     }
   };
