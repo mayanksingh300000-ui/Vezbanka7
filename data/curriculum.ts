@@ -23,6 +23,13 @@ const LESSONS_RATIONALS = [
   { id: '1.16', title: 'Децимални броеви', db_topic: "1.16. ДЕЦИМАЛНИ БРОЕВИ, ПЕРИОДИЧНИ ДЕЦИМАЛНИ БРОЕВИ" }
 ];
 
+// NEW: Geometry Lessons
+const LESSONS_GEOMETRY_1 = [
+    { id: '2.1', title: 'Кружница', db_topic: "2.1. КРУЖНИЦА" },
+    // Placeholders for future expansion
+    // { id: '2.2', title: 'Точка и права', db_topic: "2.2. ТОЧКА И ПРАВА" },
+];
+
 export const CURRICULUM: ThemeDefinition[] = [
   {
     id: 'theme_1',
@@ -63,7 +70,7 @@ export const CURRICULUM: ThemeDefinition[] = [
     icon: '📐',
     description: '2Д форми, агли, кружница и геометриски конструкции.',
     units: [
-      { id: 't2_u1', title: 'Кружница', lessons: [] },
+      { id: 't2_u1', title: 'Кружница', lessons: LESSONS_GEOMETRY_1 },
       { id: 't2_u2', title: 'Точка, права, полуправа и кружница', lessons: [] },
       { id: 't2_u3', title: 'Агол', lessons: [] },
       { id: 't2_u4', title: '2Д форми', lessons: [] },

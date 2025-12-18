@@ -14,6 +14,7 @@ import MultipleChoice from './MultipleChoice';
 import StandardParts from './StandardParts';
 import PowerOfTwo from './PowerOfTwo';
 import ConditionalEquation from './ConditionalEquation';
+import GeometryCanvas from './GeometryCanvas';
 
 interface ProblemBodyProps {
   problem: Problem;
@@ -95,6 +96,17 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
   // This map connects problem_type strings to specific components.
   // StandardParts is the default fallback.
   const renderProblemParts = () => {
+    // Priority Check: Geometry
+    if (problem.problem_type === 'geometry_construction') {
+       return (
+         <GeometryCanvas 
+            problem={problem}
+            onInputChange={onInputChange}
+            feedback={feedback}
+         />
+       );
+    }
+
     if (!problem.parts) return null;
 
     switch (problem.problem_type) {
@@ -183,8 +195,8 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
         </div>
       )}
 
-      {/* Render top-level SVG if present */}
-      {problem.svg && (
+      {/* Render top-level SVG if present - BUT SKIP if using GeometryCanvas (it handles its own svg) */}
+      {problem.svg && problem.problem_type !== 'geometry_construction' && (
         <div 
           className="mb-6 flex justify-center"
           dangerouslySetInnerHTML={{ __html: problem.svg }} 
@@ -194,7 +206,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
       {/* Claims */}
       {problem.claims && (
         <div className="bg-indigo-50 border-l-4 border-indigo-500 p-5 rounded-r-lg mb-8 shadow-sm">
-           <h4 className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-3">Анализирај ги тврдењата:</h4>
+           <h4 className="text-xs font-bold text-indigo-50 uppercase tracking-widest mb-3">Анализирај ги тврдењата:</h4>
            <ul className="space-y-3">
              {problem.claims.map((claim, idx) => (
                <li key={idx} className="flex gap-3 text-gray-800">
@@ -257,7 +269,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
       )}
 
       {/* Single Input Case (Fallback if no parts and no options) */}
-      {!problem.parts && !problem.options && problem.custom_visual_data?.type !== 'grid_of_fractions' && (
+      {!problem.parts && !problem.options && problem.problem_type !== 'geometry_construction' && problem.custom_visual_data?.type !== 'grid_of_fractions' && (
           <div className="mt-4 flex items-center gap-4">
             <span className="font-bold">Одговор:</span>
             <input
