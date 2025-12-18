@@ -18,6 +18,7 @@ import GeometryCanvas from './GeometryCanvas';
 import FractionConverter from './FractionConverter';
 import HierarchyInput from './HierarchyInput';
 import FractionInput from './FractionInput';
+import ImageCardGrid from './ImageCardGrid';
 
 interface ProblemBodyProps {
   problem: Problem;
@@ -103,6 +104,15 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
             value={inputs[problem.id] || ''}
             onChange={onInputChange}
             feedback={feedback[problem.id] || null}
+          />
+        );
+      case 'image_card_grid':
+        return (
+          <ImageCardGrid 
+            data={problem.custom_visual_data}
+            inputs={inputs}
+            onInputChange={onInputChange}
+            feedback={feedback}
           />
         );
       case 'info_cards':
@@ -352,7 +362,10 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
         problem.custom_visual_data?.type !== 'fraction_conversion' && 
         problem.custom_visual_data?.type !== 'hierarchy_fill' && 
         problem.custom_visual_data?.type !== 'fraction_input' &&
-        problem.custom_visual_data?.type !== 'interactive_table' && // Added Check here
+        problem.custom_visual_data?.type !== 'image_card_grid' &&
+        problem.custom_visual_data?.type !== 'value_cards' &&
+        problem.custom_visual_data?.type !== 'info_cards' &&
+        problem.custom_visual_data?.type !== 'interactive_table' && 
         (
           <div className="mt-4 flex items-center gap-4">
             <span className="font-bold">Одговор:</span>

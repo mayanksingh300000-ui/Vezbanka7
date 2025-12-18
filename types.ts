@@ -84,6 +84,16 @@ export interface FlashCardsLogicData {
   cards: { front: string; back: string }[];
 }
 
+export interface ImageCardGridData {
+  type: 'image_card_grid';
+  items: {
+    id: string;
+    svg: string;
+    answer: string;
+    suffix?: string;
+  }[];
+}
+
 // NEW: Geometry Data for Topic 2
 export interface GeometryCanvasData {
   type: 'geometry_canvas';
@@ -103,6 +113,7 @@ export type CustomVisualData =
   | ValueCardsData
   | FractionInputData
   | FlashCardsLogicData
+  | ImageCardGridData
   | GeometryCanvasData
   | any; // Kept 'any' temporarily for backward compatibility during migration
 

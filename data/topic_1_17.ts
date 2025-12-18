@@ -6,80 +6,142 @@ export const PROBLEMS_1_17: Problem[] = [
     "id": "WHOLE_PARTS_1_17_1",
     "category": "practice",
     "topic": "1.17. ОПИШУВАЊЕ, ПРЕСМЕТУВАЊЕ И СПОРЕДУВАЊЕ ДЕЛОВИ ОД ЦЕЛИНАТА СО ДРОПКИ И ПРОЦЕНТИ",
-    "problem_type": "text_input",
+    "problem_type": "custom_visual_data",
     "text_mk": "Пронајди колку проценти од секоја фигура е обоениот дел и запиши го на празното место.",
-    "svg": `<svg viewBox="0 0 800 180" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
-        <!-- Figure 1: Square 1/4 -->
-        <g transform="translate(50, 30)">
+    "custom_visual_data": {
+      "type": "image_card_grid",
+      "items": [
+        {
+          "id": "1a",
+          "svg": `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="96" height="96" fill="white" stroke="black" stroke-width="2"/>
+            <!-- 3/8 Pink -->
+            <!-- Top Left Triangle -->
+            <path d="M2 2 L50 2 L50 50 Z" fill="#E91E63" stroke="black" stroke-width="1"/>
+            <!-- Bottom Left Triangles -->
+            <path d="M2 50 L50 50 L50 100 Z" fill="#E91E63" stroke="black" stroke-width="1"/>
+            <path d="M2 100 L50 100 L2 50 Z" fill="#E91E63" stroke="black" stroke-width="1"/>
+            
+            <!-- Other lines to make it 8 parts -->
+            <line x1="2" y1="2" x2="98" y2="98" stroke="black" stroke-width="1"/>
+            <line x1="98" y1="2" x2="2" y2="98" stroke="black" stroke-width="1"/>
+            <line x1="50" y1="2" x2="50" y2="98" stroke="black" stroke-width="1"/>
+            <line x1="2" y1="50" x2="98" y2="50" stroke="black" stroke-width="1"/>
+          </svg>`,
+          "answer": "37.5",
+          "suffix": "%"
+        },
+        {
+          "id": "1b",
+          "svg": `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <rect x="0" y="0" width="100" height="100" fill="white" stroke="black" stroke-width="2"/>
-            <rect x="0" y="0" width="50" height="50" fill="#4CAF50" stroke="black" stroke-width="1"/>
-            <line x1="50" y1="0" x2="50" y2="100" stroke="black"/>
-            <line x1="0" y1="50" x2="100" y2="50" stroke="black"/>
-            <text x="50" y="125" text-anchor="middle" font-weight="bold" font-size="14">1/4</text>
-        </g>
-        <!-- Figure 2: Rectangle 3/5 -->
-        <g transform="translate(250, 30)">
-            <rect x="0" y="0" width="100" height="100" fill="white" stroke="black" stroke-width="2"/>
-            <rect x="0" y="0" width="60" height="100" fill="#2196F3" stroke="black" stroke-width="1"/>
-            <line x1="20" y1="0" x2="20" y2="100" stroke="black"/>
-            <line x1="40" y1="0" x2="40" y2="100" stroke="black"/>
-            <line x1="60" y1="0" x2="60" y2="100" stroke="black"/>
-            <line x1="80" y1="0" x2="80" y2="100" stroke="black"/>
-            <text x="50" y="125" text-anchor="middle" font-weight="bold" font-size="14">3/5</text>
-        </g>
-        <!-- Figure 3: Circle 3/4 -->
-        <g transform="translate(450, 30)">
-            <circle cx="50" cy="50" r="50" fill="white" stroke="black" stroke-width="2"/>
-            <path d="M50,50 L50,0 A50,50 0 1,1 0,50 Z" fill="#FF9800" stroke="black"/>
-            <text x="50" y="125" text-anchor="middle" font-weight="bold" font-size="14">3/4</text>
-        </g>
-        <!-- Figure 4: Rectangle 1/2 -->
-        <g transform="translate(650, 30)">
-            <rect x="0" y="0" width="100" height="100" fill="white" stroke="black" stroke-width="2"/>
-            <rect x="0" y="0" width="50" height="100" fill="#9C27B0" stroke="black" stroke-width="1"/>
-            <line x1="50" y1="0" x2="50" y2="100" stroke="black"/>
-            <text x="50" y="125" text-anchor="middle" font-weight="bold" font-size="14">1/2</text>
-        </g>
-    </svg>`,
-    "parts": [
-      { "part_id": "1a", "text_mk": "Прва фигура:", "answer": "25%" },
-      { "part_id": "1b", "text_mk": "Втора фигура:", "answer": "60%" },
-      { "part_id": "1c", "text_mk": "Трета фигура:", "answer": "75%" },
-      { "part_id": "1d", "text_mk": "Четврта фигура:", "answer": "50%" }
-    ]
+            <!-- 3/5 Green -->
+            <rect x="0" y="0" width="20" height="100" fill="#4CAF50" stroke="black" stroke-width="1"/>
+            <rect x="20" y="0" width="20" height="100" fill="#4CAF50" stroke="black" stroke-width="1"/>
+            <rect x="40" y="0" width="20" height="100" fill="#4CAF50" stroke="black" stroke-width="1"/>
+            <!-- Empty Cols -->
+            <rect x="60" y="0" width="20" height="100" fill="white" stroke="black" stroke-width="1"/>
+            <rect x="80" y="0" width="20" height="100" fill="white" stroke="black" stroke-width="1"/>
+          </svg>`,
+          "answer": "60",
+          "suffix": "%"
+        },
+        {
+          "id": "1c",
+          "svg": `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="48" fill="white" stroke="black" stroke-width="2"/>
+            <!-- 3/12 Orange (1/4) -->
+            <path d="M50,50 L50,2 A48,48 0 0,1 98,50 Z" fill="#FF9800" stroke="black" stroke-width="1"/>
+            <!-- Lines for 12 sectors -->
+            <g stroke="black" stroke-width="1">
+               <line x1="50" y1="50" x2="50" y2="2" />
+               <line x1="50" y1="50" x2="74" y2="8.4" />
+               <line x1="50" y1="50" x2="91.5" y2="26" />
+               <line x1="50" y1="50" x2="98" y2="50" />
+               <line x1="50" y1="50" x2="91.5" y2="74" />
+               <line x1="50" y1="50" x2="74" y2="91.6" />
+               <line x1="50" y1="50" x2="50" y2="98" />
+               <line x1="50" y1="50" x2="26" y2="91.6" />
+               <line x1="50" y1="50" x2="8.5" y2="74" />
+               <line x1="50" y1="50" x2="2" y2="50" />
+               <line x1="50" y1="50" x2="8.5" y2="26" />
+               <line x1="50" y1="50" x2="26" y2="8.4" />
+            </g>
+          </svg>`,
+          "answer": "25",
+          "suffix": "%"
+        },
+        {
+          "id": "1d",
+          "svg": `<svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+             <!-- 4x3 Grid (Total 12 squares) -->
+             <!-- 6/12 Blue (50%) -->
+             
+             <!-- Col 1 (3 blue) -->
+             <rect x="0" y="0" width="30" height="30" fill="#03A9F4" stroke="black" />
+             <rect x="0" y="30" width="30" height="30" fill="#03A9F4" stroke="black" />
+             <rect x="0" y="60" width="30" height="30" fill="#03A9F4" stroke="black" />
+             
+             <!-- Col 2 (2 blue) -->
+             <rect x="30" y="0" width="30" height="30" fill="#03A9F4" stroke="black" />
+             <rect x="30" y="30" width="30" height="30" fill="white" stroke="black" />
+             <rect x="30" y="60" width="30" height="30" fill="#03A9F4" stroke="black" />
+             
+             <!-- Col 3 (0 blue) -->
+             <rect x="60" y="0" width="30" height="30" fill="white" stroke="black" />
+             <rect x="60" y="30" width="30" height="30" fill="white" stroke="black" />
+             <rect x="60" y="60" width="30" height="30" fill="white" stroke="black" />
+
+             <!-- Col 4 (1 blue - isolated) -->
+             <rect x="90" y="0" width="30" height="30" fill="white" stroke="black" />
+             <rect x="90" y="30" width="30" height="30" fill="#03A9F4" stroke="black" />
+             <rect x="90" y="60" width="30" height="30" fill="white" stroke="black" />
+          </svg>`,
+          "answer": "50", 
+          "suffix": "%"
+        }
+      ]
+    }
   },
   {
     "id": "WHOLE_PARTS_1_17_2",
     "category": "practice",
     "topic": "1.17. ОПИШУВАЊЕ, ПРЕСМЕТУВАЊЕ И СПОРЕДУВАЊЕ ДЕЛОВИ ОД ЦЕЛИНАТА СО ДРОПКИ И ПРОЦЕНТИ",
-    "problem_type": "expression_calculation",
+    "problem_type": "custom_visual_data",
     "text_mk": "Пресметај колку е:",
-    "parts": [
-      {
-        "part_id": "2a",
-        "text_mk": "а) 20% од 25?",
-        "latex": "0.20 \\cdot 25",
-        "answer": "5"
-      },
-      {
-        "part_id": "2b",
-        "text_mk": "б) 100% од 10?",
-        "latex": "1.00 \\cdot 10",
-        "answer": "10"
-      },
-      {
-        "part_id": "2c",
-        "text_mk": "в) 0,5% од 200?",
-        "latex": "0.005 \\cdot 200",
-        "answer": "1"
-      },
-      {
-        "part_id": "2d",
-        "text_mk": "г) 200% од 80?",
-        "latex": "2.00 \\cdot 80",
-        "answer": "160"
-      }
-    ]
+    "svg": `<svg viewBox="0 0 200 80" class="w-48 h-auto mx-auto mb-4" xmlns="http://www.w3.org/2000/svg">
+       <circle cx="40" cy="40" r="30" fill="#E3F2FD" stroke="#2196F3" stroke-width="2" />
+       <path d="M40 40 L40 10 A30 30 0 0 1 65 25 Z" fill="#2196F3" />
+       <text x="110" y="45" font-family="sans-serif" font-weight="bold" font-size="30" fill="#333">%</text>
+       <text x="150" y="35" font-family="sans-serif" font-weight="bold" font-size="20" fill="#666">?</text>
+       <text x="150" y="55" font-family="sans-serif" font-weight="bold" font-size="20" fill="#666">100</text>
+       <line x1="145" y1="40" x2="185" y2="40" stroke="#666" stroke-width="2" />
+    </svg>`,
+    "custom_visual_data": {
+      "type": "value_cards",
+      "items": [
+        {
+          "id": "2a",
+          "latex": "20\\% \\text{ од } 25",
+          "answer": "5"
+        },
+        {
+          "id": "2b",
+          "latex": "100\\% \\text{ од } 10",
+          "answer": "10"
+        },
+        {
+          "id": "2c",
+          "latex": "0,5\\% \\text{ од } 200",
+          "answer": "1"
+        },
+        {
+          "id": "2d",
+          "latex": "200\\% \\text{ од } 80",
+          "answer": "160"
+        }
+      ]
+    }
   },
   {
     "id": "WHOLE_PARTS_1_17_3",
