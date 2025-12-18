@@ -10,12 +10,11 @@ export const normalize = (val: string): string => {
     .toLowerCase()                // Lowercase
     .replace(/[·•]/g, '*')        // Standardize multiplication
     .replace(/:/g, '/')           // Standardize division
-    .replace(/,/g, '.')           // Standardize decimal separator (optional, depending on strictness)
-    .replace(/\$/g, '');          // Remove LaTeX delimiters if copied
+    .replace(/,/g, '.')           // Standardize decimal separator
+    .replace(/\$/g, '');          // Remove LaTeX delimiters
 };
 
 // Advanced check using mathjs to see if two expressions are mathematically equivalent
-// e.g. "x+2" == "2+x", "1/2" == "0.5"
 const isSymbolicallyEqual = (val1: string, val2: string): boolean => {
   try {
     // 1. Handle Equations (e.g. x = 2 vs 2 = x)
@@ -35,15 +34,12 @@ const isSymbolicallyEqual = (val1: string, val2: string): boolean => {
       return false;
     }
 
-    // 2. Handle Inequalities (basic support, e.g. x < 5)
-    // We do not currently support symbolic inequality inversion (e.g. x < 5 vs 5 > x)
-    // So we fall back to string comparison for inequality signs
+    // 2. Handle Inequalities
     if (/[<>]/.test(val1) || /[<>]/.test(val2)) {
          return val1 === val2; 
     }
 
     // 3. Symbolic / Numeric Check
-    // Attempt simplify comparison (covers x+2 vs 2+x)
     try {
         const s1 = simplify(val1).toString().replace(/\s/g, '');
         const s2 = simplify(val2).toString().replace(/\s/g, '');
@@ -52,25 +48,20 @@ const isSymbolicallyEqual = (val1: string, val2: string): boolean => {
         // simplify failed, proceed to evaluate
     }
 
-    // Attempt evaluation with test variables (covers 1/2 vs 0.5, and complex expressions)
-    // Common variables in 7th grade math
     const scope = { x: 7, y: 3, a: 2, b: 5, c: 11, n: 4, k: 6 };
     const e1 = evaluate(val1, scope);
     const e2 = evaluate(val2, scope);
     
-    // Tolerance for floating point
     if (typeof e1 === 'number' && typeof e2 === 'number') {
         return Math.abs(e1 - e2) < 0.000001;
     }
 
     return false;
   } catch (e) {
-    // If mathjs fails to parse (e.g. non-math text), return false 
     return false;
   }
 };
 
-// Types of results from checking
 export interface GradeResult {
   isCorrect: boolean;
   feedback: { [key: string]: 'correct' | 'incorrect' };
@@ -86,36 +77,25 @@ export const checkProblemAnswer = (
   const newFeedback: { [key: string]: 'correct' | 'incorrect' } = {};
   let generalFeedback: 'correct' | 'incorrect' | null = null;
 
-  // Unified checking function
   const checkValue = (userVal: string, correctVal: string | undefined): boolean => {
       if (correctVal === undefined || correctVal === null) return false;
-      
       const normUser = normalize(userVal);
       const normCorrect = normalize(correctVal);
-      
-      // 1. Exact string match (fastest)
       if (normUser === normCorrect) return true;
-
-      // 2. Math symbolic match (slower but smarter)
-      // Only invoke if strings are non-empty
       if (normUser && normCorrect && isSymbolicallyEqual(normUser, normCorrect)) {
           return true;
       }
-      
       return false;
   };
 
-  // 1. Custom Visual Data Inputs (Grid Selector, Tables, Cards)
+  // 1. Custom Visual Data
   if (problem.custom_visual_data) {
     if (problem.custom_visual_data.type === 'grid_of_fractions') {
-      // Grid Selector Logic
       const selectedStr = inputs[problem.id] || '';
       const selected = selectedStr.split(',').filter(Boolean).sort();
       const correct = problem.custom_visual_data.correct_items ? [...problem.custom_visual_data.correct_items].sort() : [];
       
-      const isCorrect = JSON.stringify(selected) === JSON.stringify(correct);
-      
-      if (isCorrect) {
+      if (JSON.stringify(selected) === JSON.stringify(correct)) {
          newFeedback[problem.id] = 'correct';
          generalFeedback = 'correct';
       } else {
@@ -124,7 +104,6 @@ export const checkProblemAnswer = (
          isProblemSolved = false;
       }
     } else {
-      // Logic for Value Cards / Table
       let itemsToCheck: any[] = [];
       if (problem.custom_visual_data.type === 'interactive_table') {
         itemsToCheck = problem.custom_visual_data.rows.flat().filter((cell: any) => cell.id);
@@ -134,9 +113,7 @@ export const checkProblemAnswer = (
 
       itemsToCheck.forEach((item: any) => {
          const userVal = inputs[item.id] || '';
-         const correctVal = item.answer;
-         
-         if (checkValue(userVal, correctVal)) {
+         if (checkValue(userVal, item.answer)) {
             newFeedback[item.id] = 'correct';
          } else {
             newFeedback[item.id] = 'incorrect';
@@ -149,14 +126,11 @@ export const checkProblemAnswer = (
   // 2. Standard Parts
   if (problem.parts) {
     if (problem.problem_type === 'fill_in_the_blanks') {
-         // Handle multi-input parts
          problem.parts.forEach(part => {
              const answers = part.answer ? part.answer.split(',').map(s => s.trim()) : [];
-             
              answers.forEach((ans, idx) => {
                  const inputId = `${part.part_id}_${idx}`;
                  const userVal = inputs[inputId] || '';
-                 
                  if (checkValue(userVal, ans)) {
                      newFeedback[inputId] = 'correct';
                  } else {
@@ -166,35 +140,21 @@ export const checkProblemAnswer = (
              });
          });
     } else {
-      // Standard single input per part
       problem.parts.forEach((part) => {
         const userVal = inputs[part.part_id] || '';
-        const correctVal = part.answer; 
-        
-        if (!correctVal) return; 
-
-        // Ordering problems usually require strict order (comma separated)
-        // checkValue's mathjs might treat "1,2,3" as a set {1,2,3}, which is unordered.
-        // For ordering, we enforce strict string match via normalize (which is already inside checkValue as fallback/first step)
-        // But isSymbolicallyEqual might return true for "1, 2" vs "2, 1" if parsed as set.
-        // Wait, mathjs parse("1,2") -> [1, 2] (Matrix).
-        // simplify([1,2]) == simplify([2,1]) ? No, matrices are ordered.
-        // So checkValue is safe for ordering.
-        
-        if (checkValue(userVal, correctVal)) {
+        if (part.answer && checkValue(userVal, part.answer)) {
             newFeedback[part.part_id] = 'correct';
-        } else {
+        } else if (part.answer) {
             newFeedback[part.part_id] = 'incorrect';
             isProblemSolved = false;
         }
       });
     }
   } 
-  // 3. Check Multiple Choice
+  // 3. Multiple Choice
   else if (problem.options) {
-    const correctOption = problem.answer;
-    if (correctOption) {
-      if (selectedOption === correctOption) {
+    if (problem.answer) {
+      if (selectedOption === problem.answer) {
         generalFeedback = 'correct';
       } else {
         generalFeedback = 'incorrect';
@@ -202,12 +162,10 @@ export const checkProblemAnswer = (
       }
     }
   }
-  // 4. Check Single Input (only if no parts and no options AND not a grid selector)
+  // 4. Single Input
   else if (!problem.parts && !problem.options && problem.answer && problem.custom_visual_data?.type !== 'grid_of_fractions') {
     const userVal = inputs[problem.id] || '';
-    const correctVal = problem.answer;
-    
-    if (checkValue(userVal, correctVal)) {
+    if (checkValue(userVal, problem.answer)) {
       generalFeedback = 'correct';
     } else {
       generalFeedback = 'incorrect';
