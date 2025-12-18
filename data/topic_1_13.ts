@@ -1,5 +1,4 @@
 
-
 import { Problem } from '../types';
 
 export const PROBLEMS_1_13: Problem[] = [
@@ -8,27 +7,30 @@ export const PROBLEMS_1_13: Problem[] = [
     "id": "EXPONENT_1_13_1",
     "category": "practice",
     "topic": "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ",
-    "problem_type": "text_input",
-    "text_mk": "Пополни ги празните места со соодветните математички термини (оддели ги со запирка):",
+    "problem_type": "fill_in_the_blanks",
+    "text_mk": "Пополни ги празните места со влечење на соодветните поими или броеви:",
+    "illustration_prompt": "Визуелна репрезентација на степен 9^3 со означени делови: основа (9) и експонент (3).",
+    // Changed "x" to "$x$" so it renders as a math variable, not a multiplication sign. Added latex formatting to numbers.
+    "drag_items": ["основа", "експонент", "степен", "$9$", "$3$", "$5$", "$x$", "$0,2$", "$-9$", "$y$"],
     "parts": [
       {
         "part_id": "1a",
-        "text_mk": "а) Во записот 9³ , бројот 9 се вика ______, бројот 3 се вика _______ , а целиот запис 9³ се вика _________.",
+        "text_mk": "а) Во записот $9^3$, бројот $9$ се вика {{}}, бројот $3$ се вика {{}}, а целиот запис $9^3$ се вика {{}}.",
         "answer": "основа, експонент, степен"
       },
       {
         "part_id": "1b",
-        "text_mk": "б) Во записот (–9)³ , основа е ______, експонент е _____ , а целиот запис (–9)³ се вика _________.",
+        "text_mk": "б) Во записот $(-9)^3$, основа е {{}}, експонент е {{}}, а целиот запис $(-9)^3$ се вика {{}}.",
         "answer": "-9, 3, степен"
       },
       {
         "part_id": "1c",
-        "text_mk": "в) Во записот x⁵ , бројот x се вика__________ а бројот 5 се вика ______________.",
+        "text_mk": "в) Во записот $x^5$, бројот $x$ се вика {{}}, а бројот $5$ се вика {{}}.",
         "answer": "основа, експонент"
       },
       {
         "part_id": "1d",
-        "text_mk": "г) Во записот 0,2⁵ експонент е ____ , a основа е ______.",
+        "text_mk": "г) Во записот $0,2^5$ експонент е {{}}, a основа е {{}}.",
         "answer": "5, 0.2"
       }
     ]
@@ -37,44 +39,39 @@ export const PROBLEMS_1_13: Problem[] = [
     "id": "EXPONENT_1_13_2",
     "category": "practice",
     "topic": "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ",
-    "problem_type": "expression_calculation",
-    "text_mk": "Запиши како производ и пресметај ја вредноста на степените:",
+    "problem_type": "fill_in_the_blanks",
+    "text_mk": "Запиши како производ (користи · за множење) и пресметај ја вредноста:",
+    "note_mk": "Пример: за $2^3$ запиши 2·2·2 (или 2*2*2) во првото поле и 8 во второто.",
     "parts": [
       {
         "part_id": "2a",
-        "text_mk": "а)",
-        "latex": "2^4",
-        "answer": "16" 
+        "text_mk": "а) $2^4 = $ {{}} $= $ {{}}",
+        "answer": "2·2·2·2, 16" 
       },
       {
         "part_id": "2b",
-        "text_mk": "б)",
-        "latex": "4^2",
-        "answer": "16" 
+        "text_mk": "б) $4^2 = $ {{}} $= $ {{}}",
+        "answer": "4·4, 16" 
       },
       {
         "part_id": "2c",
-        "text_mk": "в)",
-        "latex": "5^3",
-        "answer": "125" 
+        "text_mk": "в) $5^3 = $ {{}} $= $ {{}}",
+        "answer": "5·5·5, 125" 
       },
       {
         "part_id": "2d",
-        "text_mk": "г)",
-        "latex": "3^5",
-        "answer": "243" 
+        "text_mk": "г) $3^5 = $ {{}} $= $ {{}}",
+        "answer": "3·3·3·3·3, 243" 
       },
       {
         "part_id": "2e",
-        "text_mk": "д)",
-        "latex": "0.5^2",
-        "answer": "0.25"
+        "text_mk": "д) $0.5^2 = $ {{}} $= $ {{}}",
+        "answer": "0.5·0.5, 0.25"
       },
       {
         "part_id": "2f",
-        "text_mk": "ѓ)",
-        "latex": "1.5^3",
-        "answer": "3.375"
+        "text_mk": "ѓ) $1.5^3 = $ {{}} $= $ {{}}",
+        "answer": "1.5·1.5·1.5, 3.375"
       }
     ]
   },
@@ -129,7 +126,6 @@ export const PROBLEMS_1_13: Problem[] = [
     "topic": "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ",
     "problem_type": "text_input",
     "text_mk": "Ако е $4^3 < M < 5^3$, колку цели броеви може да се запишат на местото на M?",
-    "latex_math": "4^3 < M < 5^3",
     "answer": "60" 
   },
   {
@@ -173,33 +169,34 @@ export const PROBLEMS_1_13: Problem[] = [
     "category": "challenge",
     "topic": "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ",
     "problem_type": "text_input",
-    "text_mk": "Дадени се бели и сиви жетони. Се формираат степени така што броевите напишани на белите жетони се основа, а броевите на сивите жетони се показател (експонент). Секој жетон со која било боја се користи само еднаш. Формирај ја најголемата можна разлика помеѓу вредностите на формираните степени?",
-    "svg": `<svg viewBox="0 0 400 180" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
-       <g font-family="sans-serif" text-anchor="middle" font-weight="bold" font-size="24">
-         <!-- White Tokens (Base) -->
-         <g transform="translate(80, 60)">
-           <circle cx="0" cy="0" r="30" fill="white" stroke="#333" stroke-width="3" />
-           <text x="0" y="8" fill="#333">2</text>
+    "text_mk": "Дадени се бели и сиви жетони. Се формираат степени така што броевите напишани на белите жетони се основа, а броевите на сивите жетони се показател (експонент). Секој жетон со која било боја се користи само еднаш.\n\n**Формирај ја најголемата можна разлика помеѓу вредностите на формираните степени?**",
+    "svg": `<svg viewBox="0 0 600 200" class="w-full max-w-lg mx-auto" xmlns="http://www.w3.org/2000/svg">
+       <g font-family="sans-serif" text-anchor="middle" font-weight="bold" font-size="18">
+         
+         <!-- Row 1: Exponents (Grey) -->
+         <text x="300" y="25" font-size="16" fill="#546E7A" font-weight="bold" letter-spacing="1">ПОКАЗАТЕЛИ (СИВИ)</text>
+         <g transform="translate(50, 45)">
+            <g transform="translate(0,0)"><circle cx="30" cy="30" r="24" fill="#CFD8DC" stroke="#546E7A" stroke-width="2" /><text x="30" y="37" fill="#333">1</text></g>
+            <g transform="translate(70,0)"><circle cx="30" cy="30" r="24" fill="#CFD8DC" stroke="#546E7A" stroke-width="2" /><text x="30" y="37" fill="#333">2</text></g>
+            <g transform="translate(140,0)"><circle cx="30" cy="30" r="24" fill="#CFD8DC" stroke="#546E7A" stroke-width="2" /><text x="30" y="37" fill="#333">0</text></g>
+            <g transform="translate(210,0)"><circle cx="30" cy="30" r="24" fill="#CFD8DC" stroke="#546E7A" stroke-width="2" /><text x="30" y="37" fill="#333">3</text></g>
+            <g transform="translate(280,0)"><circle cx="30" cy="30" r="24" fill="#CFD8DC" stroke="#546E7A" stroke-width="2" /><text x="30" y="37" fill="#333">4</text></g>
          </g>
-         <g transform="translate(160, 60)">
-           <circle cx="0" cy="0" r="30" fill="white" stroke="#333" stroke-width="3" />
-           <text x="0" y="8" fill="#333">5</text>
-         </g>
-         <text x="120" y="110" font-size="14" fill="#666">Основи (Бели)</text>
 
-         <!-- Grey Tokens (Exponent) -->
-         <g transform="translate(240, 60)">
-           <circle cx="0" cy="0" r="30" fill="#B0BEC5" stroke="#455A64" stroke-width="3" />
-           <text x="0" y="8" fill="#fff">4</text>
+         <line x1="20" y1="110" x2="580" y2="110" stroke="#eee" stroke-width="2" stroke-dasharray="5,5" />
+
+         <!-- Row 2: Bases (White) -->
+         <text x="300" y="135" font-size="16" fill="#333" font-weight="bold" letter-spacing="1">ОСНОВИ (БЕЛИ)</text>
+         <g transform="translate(50, 150)">
+            <g transform="translate(0,0)"><circle cx="30" cy="0" r="24" fill="white" stroke="#333" stroke-width="2" /><text x="30" y="7" fill="#333">1</text></g>
+            <g transform="translate(70,0)"><circle cx="30" cy="0" r="24" fill="white" stroke="#333" stroke-width="2" /><text x="30" y="7" fill="#333">2</text></g>
+            <g transform="translate(140,0)"><circle cx="30" cy="0" r="24" fill="white" stroke="#333" stroke-width="2" /><text x="30" y="7" fill="#333">0</text></g>
+            <g transform="translate(210,0)"><circle cx="30" cy="0" r="24" fill="white" stroke="#333" stroke-width="2" /><text x="30" y="7" fill="#333">3</text></g>
+            <g transform="translate(280,0)"><circle cx="30" cy="0" r="24" fill="white" stroke="#333" stroke-width="2" /><text x="30" y="7" fill="#333">4</text></g>
          </g>
-         <g transform="translate(320, 60)">
-           <circle cx="0" cy="0" r="30" fill="#B0BEC5" stroke="#455A64" stroke-width="3" />
-           <text x="0" y="8" fill="#fff">3</text>
-         </g>
-         <text x="280" y="110" font-size="14" fill="#666">Експоненти (Сиви)</text>
        </g>
     </svg>`,
-    "answer": "617" 
+    "answer": "256" 
   },
   {
     "id": "CHALLENGE_1_13_2",
@@ -211,7 +208,6 @@ export const PROBLEMS_1_13: Problem[] = [
       {
         "part_id": "P2a",
         "text_mk": "а) Колку е вредноста на $\\Delta$?",
-        "latex": "\\Delta^5 = 3^3 + 5",
         "answer": "2"
       },
       {
@@ -261,51 +257,35 @@ export const PROBLEMS_1_13: Problem[] = [
     "problem_type": "text_input",
     "text_mk": "Од 10 складни сини правоаголници, секој со должини на страните $2^5$ cm и $2^6$ cm, е формиран правоаголникот ABCD, така што нивните страни се допираат како што е прикажано на сликата. Според даденото, колкав е периметарот на правоаголникот EFGH во внатрешноста на правоаголникот ABCD, изразен во центиметри?",
     "svg": `<svg viewBox="0 0 400 300" class="w-full max-w-md mx-auto" xmlns="http://www.w3.org/2000/svg">
-       <!-- 
-          Layout Logic:
-          Small Rect: 32 x 64 (scaled down by factor)
-          Top Row: 3 horizontal (width 192)
-          Bottom Row: 3 horizontal (width 192)
-          Left Col: 2 vertical (height 128)
-          Right Col: 2 vertical (height 128)
-          Total Width = 192, Total Height = 192
-       -->
-       <rect x="50" y="50" width="300" height="300" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/> <!-- ABCD bounds visual aid -->
+       <rect x="50" y="50" width="300" height="300" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="4,4"/> 
        
        <g stroke="white" stroke-width="2" fill="#1976D2">
-         <!-- Top Row (3 horizontal) -->
          <rect x="50" y="50" width="100" height="50" />
          <rect x="150" y="50" width="100" height="50" />
          <rect x="250" y="50" width="100" height="50" />
 
-         <!-- Left Column (2 vertical) -->
          <rect x="50" y="100" width="50" height="100" />
          <rect x="50" y="200" width="50" height="100" />
 
-         <!-- Right Column (2 vertical) -->
          <rect x="300" y="100" width="50" height="100" />
          <rect x="300" y="200" width="50" height="100" />
 
-         <!-- Bottom Row (3 horizontal) -->
          <rect x="50" y="300" width="100" height="50" />
          <rect x="150" y="300" width="100" height="50" />
          <rect x="250" y="300" width="100" height="50" />
        </g>
 
-       <!-- Labels -->
        <text x="40" y="45" font-weight="bold" font-size="16">A</text>
        <text x="360" y="45" font-weight="bold" font-size="16">B</text>
        <text x="360" y="365" font-weight="bold" font-size="16">C</text>
        <text x="40" y="365" font-weight="bold" font-size="16">D</text>
 
-       <!-- Inner Hole EFGH -->
        <rect x="100" y="100" width="200" height="200" fill="#E3F2FD" stroke="#333" stroke-width="2" stroke-dasharray="4,4" />
        <text x="110" y="120" font-weight="bold" font-size="14">E</text>
        <text x="290" y="120" font-weight="bold" font-size="14">F</text>
        <text x="290" y="290" font-weight="bold" font-size="14">G</text>
        <text x="110" y="290" font-weight="bold" font-size="14">H</text>
 
-       <!-- Dimensions Hint -->
        <text x="200" y="80" text-anchor="middle" fill="white" font-size="12">64</text>
        <text x="250" y="250" text-anchor="middle" fill="white" font-size="12" transform="rotate(90 250 250)">64</text>
     </svg>`,

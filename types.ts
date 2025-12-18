@@ -5,6 +5,7 @@ export interface Part {
   latex?: string;
   latex_numbers?: string;
   svg?: string;
+  illustration_prompt?: string; // NEW: Description for AI to generate the SVG later
   latex_suffix?: string;
   answer?: string;
 }
@@ -29,6 +30,7 @@ export interface Problem {
   parts?: Part[];
   options?: Option[];
   svg?: string;
+  illustration_prompt?: string; // NEW: Description for AI to generate the SVG later
   drag_items?: string[]; 
   custom_visual_data?: any;
   answer?: string;

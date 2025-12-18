@@ -7,6 +7,7 @@ import DragDropSetTheory from './DragDropSetTheory';
 import DragDropComparison from './DragDropComparison';
 import WeatherDashboard from './WeatherDashboard';
 import FlipCardGrid from './FlipCardGrid';
+import FillInTheBlanks from './FillInTheBlanks';
 
 interface ProblemBodyProps {
   problem: Problem;
@@ -15,7 +16,7 @@ interface ProblemBodyProps {
   selectedOption: string | null;
   onOptionSelect: (optionId: string) => void;
   feedback: { [key: string]: 'correct' | 'incorrect' | null };
-  hasAttempted?: boolean; // New prop to know if user clicked Check
+  hasAttempted?: boolean; 
 }
 
 const ProblemBody: React.FC<ProblemBodyProps> = ({ 
@@ -34,39 +35,52 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
     return null;
   };
 
+  // Helper to parse text with LaTeX ($...$) and simple markdown bold (**...**)
+  const renderText = (text: string) => {
+    if (!text) return null;
+    const latexParts = text.split(/(\$[^$]+\$)/g);
+    
+    return latexParts.map((part, i) => {
+      if (part.startsWith('$') && part.endsWith('$')) {
+        return <LatexRenderer key={i} content={part.slice(1, -1)} className="inline-block mx-1 align-middle text-indigo-700" />;
+      }
+      
+      const boldParts = part.split(/(\*\*.*?\*\*)/g);
+      return boldParts.map((subPart, j) => {
+        if (subPart.startsWith('**') && subPart.endsWith('**')) {
+          return <strong key={`${i}-${j}`} className="font-bold">{subPart.slice(2, -2)}</strong>;
+        }
+        return <span key={`${i}-${j}`}>{subPart}</span>;
+      });
+    });
+  };
+
   // Determine grid layout for Parts
   const getPartsLayoutClass = () => {
-    // 1. Automatic detection of long content (e.g. wide equations in 1.8.1)
-    // If any latex string is long, force a single-column vertical layout to avoid overflow.
     const hasLongContent = problem.parts?.some(p => 
         (p.latex_numbers && p.latex_numbers.length > 45) || 
         (p.latex && p.latex.length > 45)
     );
 
-    if (hasLongContent) {
+    if (hasLongContent || problem.problem_type === 'fill_in_the_blanks') {
         return "space-y-6";
     }
 
     if (problem.problem_type === 'set_theory_drag_drop') return "space-y-6";
     if (problem.problem_type === 'drag_drop_comparison') return "space-y-6";
     
-    // 3 columns for 3-part equations
     if (problem.parts && problem.parts.length === 3 && problem.problem_type === 'equation_solving') return "grid grid-cols-1 md:grid-cols-3 gap-4";
     
-    // 2 columns for comparisons
     if (problem.problem_type === 'comparison_of_integers') return "grid grid-cols-1 md:grid-cols-2 gap-4";
     
-    // NEW RULE: If exactly 4 parts, use 2x2 grid (Perfect for Problem 1.9.2)
     if (problem.parts && problem.parts.length === 4) {
         return "grid grid-cols-1 md:grid-cols-2 gap-4";
     }
 
-    // NEW: Handle the specific Challenge cases (2 parts) for inequalities, expressions AND equation_solving to look like cards
     if (problem.parts && problem.parts.length === 2 && ['inequalities_solving', 'expression_calculation', 'equation_solving'].includes(problem.problem_type)) {
        return "grid grid-cols-1 md:grid-cols-2 gap-4";
     }
 
-    // NEW RULE: If there are 6 or more parts (like Problem 1.7.3), use a 3-column grid
     if (problem.parts && problem.parts.length >= 6) {
        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4";
     }
@@ -74,7 +88,6 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
     return "space-y-6";
   };
 
-  // Logic: Use grid if options text is long OR if there are exactly 4 options (perfect 2x2 grid)
   const isGridOptions = problem.options && (
     (problem.options.length > 3 && problem.options.every(o => o.text_mk && o.text_mk.length > 50)) ||
     problem.options.length === 4
@@ -82,7 +95,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
 
   return (
     <>
-      {/* Custom Visual Data (e.g. Weather Dashboard, Flashcards, Value Cards, Interactive Tables) */}
+      {/* Custom Visual Data */}
       {problem.custom_visual_data && (
         <div className="mb-6">
            {problem.problem_type === 'data_analysis_and_comparison' && (
@@ -121,7 +134,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
              </div>
            )}
 
-           {/* NEW: Interactive Table Renderer */}
+           {/* Interactive Table Renderer */}
            {problem.custom_visual_data.type === 'interactive_table' && (
              <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border border-gray-300 rounded-lg overflow-hidden shadow-sm">
@@ -140,7 +153,6 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
                         {row.map((cell, cIdx) => (
                           <td key={cIdx} className="px-2 py-3 border-r last:border-r-0 border-gray-200 text-center">
                              {cell.id ? (
-                               // Input Cell
                                <div className="flex items-center justify-center gap-1">
                                  <input 
                                    type="text"
@@ -151,11 +163,9 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
                                        feedback[cell.id] === 'incorrect' ? 'border-red-400 bg-red-50' : 'border-gray-300'}
                                    `}
                                  />
-                                 {/* Only show icon if there's feedback to save space */}
                                  {feedback[cell.id] && renderFeedbackIcon(feedback[cell.id])}
                                </div>
                              ) : (
-                               // Static Value Cell
                                <span className="font-bold text-gray-700">
                                  {cell.value}
                                </span>
@@ -179,7 +189,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
         />
       )}
 
-      {/* Render Claims (Statements I, II, III) separate from visual data */}
+      {/* Claims */}
       {problem.claims && (
         <div className="bg-indigo-50 border-l-4 border-indigo-500 p-5 rounded-r-lg mb-8 shadow-sm">
            <h4 className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-3">Анализирај ги тврдењата:</h4>
@@ -196,19 +206,33 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
         </div>
       )}
 
-      {/* Legacy Data Table Rendering (if no custom_visual_data) */}
+      {/* Legacy Data Table */}
       {problem.data_table_latex && !problem.custom_visual_data && (
         <div className="mb-6 overflow-x-auto flex justify-center">
             <LatexRenderer content={problem.data_table_latex} block />
         </div>
       )}
 
-      {/* Render Parts (Equation, Comparison, Ordering, Sets, DragDropComparison) */}
+      {/* Render Parts */}
       {problem.parts && (
         <div className={getPartsLayoutClass()}>
           
-          {/* Special Case: Set Theory Drag and Drop */}
-          {problem.problem_type === 'set_theory_drag_drop' && problem.drag_items ? (
+          {/* Case: Fill in the Blanks */}
+          {problem.problem_type === 'fill_in_the_blanks' ? (
+             problem.parts.map((part) => (
+                <FillInTheBlanks 
+                  key={part.part_id}
+                  part={part}
+                  inputs={inputs}
+                  onInputChange={onInputChange}
+                  feedback={feedback}
+                  dragItems={problem.drag_items}
+                />
+             ))
+          ) : 
+          
+          /* Case: Set Theory Drag and Drop */
+          problem.problem_type === 'set_theory_drag_drop' && problem.drag_items ? (
             <div className="col-span-1 md:col-span-2">
               <DragDropSetTheory 
                 parts={problem.parts}
@@ -232,7 +256,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
             // Standard Parts Rendering
             problem.parts.map((part) => (
               <div key={part.part_id} className="p-4 bg-gray-50 rounded-lg flex flex-col justify-center relative shadow-sm border border-gray-100">
-                <div className="mb-2 font-semibold text-gray-700">{part.text_mk}</div>
+                <div className="mb-2 font-semibold text-gray-700">{renderText(part.text_mk)}</div>
                 
                 {part.latex_numbers && problem.problem_type !== 'ordering_of_integers' && (
                   <div className="mb-3">
@@ -263,10 +287,8 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
                   </div>
                 ) : (
                   <div className={`flex items-center flex-wrap gap-2 ${problem.parts && problem.parts.length === 3 ? 'justify-center' : ''}`}>
-                    {/* Left part (Prefix) */}
                     {part.latex && <LatexRenderer content={part.latex} className="text-xl mr-2" />}
                     
-                    {/* Input Field */}
                     <input
                       type="text"
                       value={inputs[part.part_id] || ''}
@@ -276,7 +298,6 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
                       placeholder={part.latex_numbers ? "Внеси ги броевите..." : "?"}
                     />
 
-                    {/* Right part (Suffix) */}
                     {part.latex_suffix && <LatexRenderer content={part.latex_suffix} className="text-xl ml-2" />}
 
                     {renderFeedbackIcon(feedback[part.part_id])}
@@ -286,6 +307,35 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
             ))
           )}
         </div>
+      )}
+      
+      {/* Universal Drag Items Bank (for Fill in the blanks) */}
+      {problem.problem_type === 'fill_in_the_blanks' && problem.drag_items && (
+         <div className="sticky bottom-4 z-20 mt-6 flex justify-center">
+            <div className="bg-white/95 backdrop-blur-sm p-4 rounded-2xl shadow-xl border-2 border-indigo-200 flex flex-wrap gap-3 justify-center animate-fade-in-up">
+              {problem.drag_items.map((item, idx) => (
+                <div
+                  key={idx}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = 'copy';
+                    e.dataTransfer.setData('text/plain', item);
+                  }}
+                  className="
+                    cursor-grab active:cursor-grabbing hover:-translate-y-1 transition-transform
+                    bg-indigo-100 text-indigo-900 shadow-sm rounded-lg px-4 py-2
+                    font-bold border border-indigo-300 text-sm md:text-base flex items-center justify-center
+                  "
+                >
+                  {item.startsWith('$') && item.endsWith('$') ? (
+                    <LatexRenderer content={item.slice(1, -1)} />
+                  ) : (
+                    item
+                  )}
+                </div>
+              ))}
+            </div>
+         </div>
       )}
 
       {/* Render Options (Multiple Choice) */}
@@ -313,7 +363,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
         </div>
       )}
 
-      {/* Single Input Case (Fallback) */}
+      {/* Single Input Case */}
       {!problem.parts && !problem.options && (
           <div className="mt-4 flex items-center gap-4">
             <span className="font-bold">Одговор:</span>

@@ -34,22 +34,27 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
     let currentSolvedState = true; // Assume true, prove false
     const newFeedback: { [key: string]: 'correct' | 'incorrect' } = {};
 
+    // Helper to normalize strings for comparison:
+    // 1. Remove spaces
+    // 2. Lowercase
+    // 3. Replace various dots (·, •) with asterisk * for consistent multiplication check
+    // 4. Remove $ signs (for LaTeX formatted drag items)
+    const normalize = (val: string) => val.replace(/\s+/g, '').toLowerCase().replace(/[·•]/g, '*').replace(/\$/g, '');
+
     // 1. Check Custom Visual Data Inputs (Value Cards or Interactive Table)
     if (problem.custom_visual_data && (problem.custom_visual_data.type === 'value_cards' || problem.custom_visual_data.type === 'interactive_table')) {
-       
        let itemsToCheck: any[] = [];
        if (problem.custom_visual_data.type === 'interactive_table') {
-         // Flatten rows to find cells with IDs
          itemsToCheck = problem.custom_visual_data.rows.flat().filter((cell: any) => cell.id);
        } else {
          itemsToCheck = problem.custom_visual_data.items;
        }
 
        itemsToCheck.forEach((item: any) => {
-          const userVal = inputs[item.id]?.trim();
+          const userVal = inputs[item.id] || '';
           const correctVal = item.answer;
           
-          if (userVal === correctVal) {
+          if (normalize(userVal) === normalize(correctVal)) {
              newFeedback[item.id] = 'correct';
           } else {
              newFeedback[item.id] = 'incorrect';
@@ -60,29 +65,49 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
 
     // 2. Check Standard Parts
     if (problem.parts) {
-      problem.parts.forEach((part) => {
-        const userVal = inputs[part.part_id]?.trim();
-        const correctVal = part.answer; // Use correct answer from JSON part
-        
-        if (!correctVal) return; 
+      if (problem.problem_type === 'fill_in_the_blanks') {
+           // Handle multi-input parts: part.answer should be comma-separated list of answers corresponding to {{}} in order
+           problem.parts.forEach(part => {
+               const answers = part.answer ? part.answer.split(',').map(s => s.trim()) : [];
+               
+               answers.forEach((ans, idx) => {
+                   const inputId = `${part.part_id}_${idx}`;
+                   const userVal = inputs[inputId] || '';
+                   
+                   if (normalize(userVal) === normalize(ans)) {
+                       newFeedback[inputId] = 'correct';
+                   } else {
+                       newFeedback[inputId] = 'incorrect';
+                       currentSolvedState = false;
+                   }
+               });
+           });
+      } else {
+        // Standard single input per part
+        problem.parts.forEach((part) => {
+          const userVal = inputs[part.part_id] || '';
+          const correctVal = part.answer; 
+          
+          if (!correctVal) return; 
 
-        if (problem.problem_type === 'ordering_of_integers') {
-             const normalize = (str: string) => str.split(',').map(s => s.trim()).join(', ');
-             if (normalize(userVal || '') === normalize(correctVal)) {
-                 newFeedback[part.part_id] = 'correct';
-             } else {
-                 newFeedback[part.part_id] = 'incorrect';
-                 currentSolvedState = false;
-             }
-        } else {
-             if (userVal === correctVal) {
-               newFeedback[part.part_id] = 'correct';
-             } else {
-               newFeedback[part.part_id] = 'incorrect';
-               currentSolvedState = false;
-             }
-        }
-      });
+          if (problem.problem_type === 'ordering_of_integers') {
+              // For ordering, we normalize by ensuring comma separation logic is consistent
+              if (normalize(userVal) === normalize(correctVal)) {
+                  newFeedback[part.part_id] = 'correct';
+              } else {
+                  newFeedback[part.part_id] = 'incorrect';
+                  currentSolvedState = false;
+              }
+          } else {
+              if (normalize(userVal) === normalize(correctVal)) {
+                newFeedback[part.part_id] = 'correct';
+              } else {
+                newFeedback[part.part_id] = 'incorrect';
+                currentSolvedState = false;
+              }
+          }
+        });
+      }
     } 
     // 3. Check Multiple Choice
     else if (problem.options) {
@@ -101,10 +126,10 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
     }
     // 4. Check Single Input (only if no parts and no options)
     else if (!problem.parts && !problem.options && problem.answer) {
-      const userVal = inputs[problem.id]?.trim();
+      const userVal = inputs[problem.id] || '';
       const correctVal = problem.answer;
       
-      if (userVal === correctVal) {
+      if (normalize(userVal) === normalize(correctVal)) {
         setGeneralFeedback('correct');
       } else {
         setGeneralFeedback('incorrect');
@@ -122,21 +147,29 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
     }
   };
 
-  // Helper to parse simple markdown bold syntax **text**
+  // Helper to parse text with LaTeX ($...$) and simple markdown bold (**...**)
   const renderText = (text: string) => {
-    // Split on **bold**
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, index) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={index} className="font-bold">{part.slice(2, -2)}</strong>;
+    // Split by LaTeX delimiters $...$
+    const latexParts = text.split(/(\$[^$]+\$)/g);
+    
+    return latexParts.map((part, i) => {
+      // If part is enclosed in $, render as LaTeX
+      if (part.startsWith('$') && part.endsWith('$')) {
+        return <LatexRenderer key={i} content={part.slice(1, -1)} className="inline-block mx-1 align-middle text-indigo-700" />;
       }
-      return part;
+      
+      // Otherwise, parse for Bold (**...**)
+      const boldParts = part.split(/(\*\*.*?\*\*)/g);
+      return boldParts.map((subPart, j) => {
+        if (subPart.startsWith('**') && subPart.endsWith('**')) {
+          return <strong key={`${i}-${j}`} className="font-bold">{subPart.slice(2, -2)}</strong>;
+        }
+        return <span key={`${i}-${j}`}>{subPart}</span>;
+      });
     });
   };
 
   const displayTitle = titleOverride || problem.id.replace('_', ' ');
-
-  // Determine if the user has attempted the problem (Check button clicked)
   const hasAttempted = isSolved || generalFeedback !== null || Object.keys(feedback).some(k => feedback[k] !== null);
 
   return (
@@ -189,7 +222,6 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
           )}
         </div>
 
-        {/* Separated View Component */}
         <ProblemBody 
           problem={problem}
           inputs={inputs}

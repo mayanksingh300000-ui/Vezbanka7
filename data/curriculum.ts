@@ -102,11 +102,31 @@ export const CURRICULUM: ThemeDefinition[] = [
     icon: '📝',
     description: 'Проверка на знаењето преку тестови за секоја тема.',
     units: [
-      { id: 'test_u1', title: 'Тест: Броеви и операции', lessons: [] },
-      { id: 'test_u2', title: 'Тест: Геометрија', lessons: [] },
-      { id: 'test_u3', title: 'Тест: Алгебра', lessons: [] },
-      { id: 'test_u4', title: 'Тест: Мерење', lessons: [] },
-      { id: 'test_u5', title: 'Тест: Работа со податоци', lessons: [] }
+      { 
+        id: 'test_u1', 
+        title: 'Тест: Броеви и операции', 
+        lessons: [{ id: 'TEST_1', title: 'Цел тест - Тема 1', db_topic: 'TEST_THEME_1' }] 
+      },
+      { 
+        id: 'test_u2', 
+        title: 'Тест: Геометрија', 
+        lessons: [{ id: 'TEST_2', title: 'Цел тест - Тема 2', db_topic: 'TEST_THEME_2' }] 
+      },
+      { 
+        id: 'test_u3', 
+        title: 'Тест: Алгебра', 
+        lessons: [{ id: 'TEST_3', title: 'Цел тест - Тема 3', db_topic: 'TEST_THEME_3' }] 
+      },
+      { 
+        id: 'test_u4', 
+        title: 'Тест: Мерење', 
+        lessons: [{ id: 'TEST_4', title: 'Цел тест - Тема 4', db_topic: 'TEST_THEME_4' }] 
+      },
+      { 
+        id: 'test_u5', 
+        title: 'Тест: Работа со податоци', 
+        lessons: [{ id: 'TEST_5', title: 'Цел тест - Тема 5', db_topic: 'TEST_THEME_5' }] 
+      }
     ]
   }
 ];
