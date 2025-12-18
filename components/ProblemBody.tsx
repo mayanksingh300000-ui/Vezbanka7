@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Problem } from '../types';
 import LatexRenderer from './LatexRenderer';
 import DragDropSetTheory from './DragDropSetTheory';
@@ -15,6 +15,9 @@ import StandardParts from './StandardParts';
 import PowerOfTwo from './PowerOfTwo';
 import ConditionalEquation from './ConditionalEquation';
 import GeometryCanvas from './GeometryCanvas';
+import FractionConverter from './FractionConverter';
+import HierarchyInput from './HierarchyInput';
+import FractionInput from './FractionInput';
 
 interface ProblemBodyProps {
   problem: Problem;
@@ -35,6 +38,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
   feedback,
   hasAttempted = false
 }) => {
+  const [isZoomed, setIsZoomed] = useState(false);
 
   // --- 1. Custom Visuals Dispatcher (Top Level) ---
   const renderCustomVisual = () => {
@@ -73,6 +77,59 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
             onInputChange={onInputChange}
             feedback={feedback}
           />
+        );
+      case 'fraction_conversion':
+        return (
+          <FractionConverter
+            data={problem.custom_visual_data}
+            inputs={inputs}
+            onInputChange={onInputChange}
+            feedback={feedback}
+          />
+        );
+      case 'hierarchy_fill':
+        return (
+          <HierarchyInput
+            data={problem.custom_visual_data}
+            inputs={inputs}
+            onInputChange={onInputChange}
+            feedback={feedback}
+          />
+        );
+      case 'fraction_input':
+        return (
+          <FractionInput
+            id={problem.id}
+            value={inputs[problem.id] || ''}
+            onChange={onInputChange}
+            feedback={feedback[problem.id] || null}
+          />
+        );
+      case 'info_cards':
+        // New visual for purely displaying information in card format (Challenge 2)
+        return (
+          <div className="space-y-6">
+             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {problem.custom_visual_data.cards.map((card: any, idx: number) => (
+                  <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex flex-col items-center text-center hover:shadow-md transition-shadow">
+                      <div className="text-4xl mb-3">{card.icon}</div>
+                      <h4 className="font-bold text-gray-800 text-lg">{card.title}</h4>
+                      <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-2">{card.subtitle}</p>
+                      <div className="mt-auto bg-indigo-50 px-4 py-2 rounded-lg border border-indigo-100 w-full">
+                         <span className="font-bold text-indigo-700 text-xl">
+                            <LatexRenderer content={card.value} />
+                         </span>
+                      </div>
+                  </div>
+                ))}
+             </div>
+             {problem.custom_visual_data.extra_info && (
+               <div className="bg-orange-50 border-l-4 border-orange-400 p-4 rounded-r-lg text-orange-800 font-medium flex items-center gap-3">
+                  <span>⏱️</span>
+                  <span>{problem.custom_visual_data.extra_info}</span>
+               </div>
+             )}
+          </div>
         );
       default:
         // Legacy fallback for types handled by problem_type check previously
@@ -188,19 +245,39 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
 
   return (
     <>
-      {/* Custom Visual Data Section */}
+      {/* Render top-level SVG illustration FIRST (e.g., Egg Cartons) */}
+      {problem.svg && problem.problem_type !== 'geometry_construction' && (
+        <>
+          <div 
+            className="mb-6 flex justify-center cursor-zoom-in"
+            onClick={() => setIsZoomed(true)}
+            title="Кликни за зголемување"
+            dangerouslySetInnerHTML={{ __html: problem.svg }} 
+          />
+          {isZoomed && (
+            <div 
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 cursor-zoom-out"
+              onClick={() => setIsZoomed(false)}
+            >
+               <div className="bg-white p-2 rounded-lg max-w-[95vw] max-h-[95vh] overflow-auto shadow-2xl relative">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setIsZoomed(false); }}
+                    className="absolute top-2 right-2 bg-gray-200 hover:bg-gray-300 rounded-full w-8 h-8 flex items-center justify-center font-bold text-gray-700"
+                  >
+                    ✕
+                  </button>
+                  <div dangerouslySetInnerHTML={{ __html: problem.svg }} className="w-full h-full" />
+               </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Custom Visual Data Section (e.g., Input Fields, Charts) */}
       {problem.custom_visual_data && (
         <div className="mb-6">
            {renderCustomVisual()}
         </div>
-      )}
-
-      {/* Render top-level SVG if present - BUT SKIP if using GeometryCanvas (it handles its own svg) */}
-      {problem.svg && problem.problem_type !== 'geometry_construction' && (
-        <div 
-          className="mb-6 flex justify-center"
-          dangerouslySetInnerHTML={{ __html: problem.svg }} 
-        />
       )}
 
       {/* Claims */}
@@ -269,7 +346,14 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
       )}
 
       {/* Single Input Case (Fallback if no parts and no options) */}
-      {!problem.parts && !problem.options && problem.problem_type !== 'geometry_construction' && problem.custom_visual_data?.type !== 'grid_of_fractions' && (
+      {!problem.parts && !problem.options && 
+        problem.problem_type !== 'geometry_construction' && 
+        problem.custom_visual_data?.type !== 'grid_of_fractions' && 
+        problem.custom_visual_data?.type !== 'fraction_conversion' && 
+        problem.custom_visual_data?.type !== 'hierarchy_fill' && 
+        problem.custom_visual_data?.type !== 'fraction_input' &&
+        problem.custom_visual_data?.type !== 'interactive_table' && // Added Check here
+        (
           <div className="mt-4 flex items-center gap-4">
             <span className="font-bold">Одговор:</span>
             <input

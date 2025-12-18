@@ -1,4 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
+import LatexRenderer from './LatexRenderer';
 
 interface SortableListProps {
   items: string[];
@@ -10,8 +12,12 @@ const SortableList: React.FC<SortableListProps> = ({ items, onChange }) => {
   const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    setList(items);
-  }, [items.join(',')]); // Update list if external items change (deep compare via string)
+    // Only update if the incoming items are effectively different to avoid loop
+    // Simple JSON stringify comparison usually suffices for string arrays
+    if (JSON.stringify(items) !== JSON.stringify(list)) {
+        setList(items);
+    }
+  }, [items]); 
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggingIndex(index);
@@ -62,7 +68,7 @@ const SortableList: React.FC<SortableListProps> = ({ items, onChange }) => {
               }
             `}
           >
-            {item}
+            <LatexRenderer content={item} />
           </div>
         ))}
       </div>

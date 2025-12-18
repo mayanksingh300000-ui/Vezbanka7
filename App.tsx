@@ -11,6 +11,14 @@ import Documentation from './components/Documentation';
 // --- КОНФИГУРАЦИЈА ---
 const ENABLE_LOCKING = false; 
 
+// Helper to ensure loose matching between Curriculum topics and Problem topics
+const normalizeTopic = (topic: string | undefined) => {
+  if (!topic) return '';
+  // Remove all spaces, dots, and convert to lowercase for comparison
+  // This ensures "1.5. ЦЕЛИ БРОЕВИ" matches "1.5.ЦЕЛИ БРОЕВИ"
+  return topic.replace(/[\s\.]/g, '').toLowerCase();
+};
+
 const App: React.FC = () => {
   // Navigation State
   const [activeTab, setActiveTab] = useState<TabType>('regular');
@@ -63,14 +71,20 @@ const App: React.FC = () => {
     let previousLessonComplete = true;
 
     return selectedUnit.lessons.map(lesson => {
+      const normalizedLessonTopic = normalizeTopic(lesson.db_topic);
+
       // Practice Problems
-      const practiceProbs = WORKBOOK_DATA.problems.filter(p => p.category === 'practice' && p.topic === lesson.db_topic);
+      const practiceProbs = WORKBOOK_DATA.problems.filter(p => 
+        p.category === 'practice' && normalizeTopic(p.topic) === normalizedLessonTopic
+      );
       const practiceTotal = practiceProbs.length;
       const practiceSolved = practiceProbs.filter(p => solvedProblems.has(p.id)).length;
       const isComplete = practiceTotal > 0 && practiceSolved === practiceTotal;
 
       // Challenge Problems
-      const challengeProbs = WORKBOOK_DATA.problems.filter(p => p.category === 'challenge' && p.topic === lesson.db_topic);
+      const challengeProbs = WORKBOOK_DATA.problems.filter(p => 
+        p.category === 'challenge' && normalizeTopic(p.topic) === normalizedLessonTopic
+      );
       const challengeTotal = challengeProbs.length;
       const challengeSolved = challengeProbs.filter(p => solvedProblems.has(p.id)).length;
 

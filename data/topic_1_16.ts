@@ -7,33 +7,34 @@ export const PROBLEMS_1_16: Problem[] = [
     "id": "DECIMAL_1_16_1",
     "category": "practice",
     "topic": "1.16. ДЕЦИМАЛНИ БРОЕВИ, ПЕРИОДИЧНИ ДЕЦИМАЛНИ БРОЕВИ",
-    "problem_type": "text_input",
-    "text_mk": "Во речениците подолу се дадени различни записи на броеви. Поврзи ги соодветните парови (децимален број со дропка) за да го откриеш натрапникот.",
+    "problem_type": "fill_in_the_blanks",
+    "text_mk": "Во речениците подолу, различните начини на запишување на броевите се дадени измешано. Еден од броевите е натрапник!\n\n**Повлечи ги картичките (броевите) во соодветните полиња за да ги поврзеш паровите.**",
+    "drag_items": ["$\\frac{61}{4}$", "$3,375$", "$3,75$", "$\\frac{305}{25}$", "$\\frac{109}{10}$"],
     "parts": [
         {
             "part_id": "1a",
-            "text_mk": "а) Температурата е 27,72 °C. Која дропка одговара?",
-            "answer": "305/11" 
+            "text_mk": "Денес температурата на воздухот е $\\frac{27}{8}$ °C. Ова е исто што и: {{}}",
+            "answer": "3,375"
         },
         {
             "part_id": "1b",
-            "text_mk": "б) Тежината е 10,9 kg. Која дропка одговара?",
-            "answer": "109/10"
+            "text_mk": "Тежината на Емил е $10,9$ kg. Ова е исто што и: {{}}",
+            "answer": "\\frac{109}{10}"
         },
         {
             "part_id": "1c",
-            "text_mk": "в) Потрошени се 15,25 L вода. Која дропка одговара?",
-            "answer": "61/4"
+            "text_mk": "Елена потроши $15,25$ L вода за да ги наводнува овошките. Ова е исто што и: {{}}",
+            "answer": "\\frac{61}{4}"
         },
         {
             "part_id": "1d",
-            "text_mk": "г) Цената е 3,75 денари. Која дропка одговара?",
-            "answer": "15/4"
+            "text_mk": "Во маркетот, еден килограм јаболка чини $\\frac{15}{4}$ ден. Ова е исто што и: {{}}",
+            "answer": "3,75"
         },
         {
             "part_id": "1e",
-            "text_mk": "д) Кој број од листата (305/11, 109/10, 61/4, 15/4, 3,375) остана како натрапник?",
-            "answer": "3,375"
+            "text_mk": "Преостанатиот број (натрапникот) е: {{}}",
+            "answer": "\\frac{305}{25}"
         }
     ]
   },
@@ -71,56 +72,64 @@ export const PROBLEMS_1_16: Problem[] = [
     "category": "practice",
     "topic": "1.16. ДЕЦИМАЛНИ БРОЕВИ, ПЕРИОДИЧНИ ДЕЦИМАЛНИ БРОЕВИ",
     "problem_type": "multiple_choice",
-    "text_mk": "Уличните светилки на една улица се поставени на еднакво растојание од **7,9 m**. Која е најблиската проценка за растојанието помеѓу автомобилите прикажани на сликата?",
-    "svg": `<svg viewBox="0 0 600 200" class="w-full max-w-2xl mx-auto" xmlns="http://www.w3.org/2000/svg">
-       <!-- Pavement -->
-       <rect x="0" y="150" width="600" height="50" fill="#9E9E9E" />
-       <line x1="0" y1="150" x2="600" y2="150" stroke="#616161" stroke-width="2" />
+    "text_mk": "Уличните светилки на една улица се поставени на еднакво растојание. Растојанието помеѓу две соседни светилки е 7,9 m. Која е најблиската проценка за растојанието помеѓу автомобилите прикажани на сликата?",
+    "svg": `<svg viewBox="0 0 800 300" class="w-full h-auto" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+          <path d="M0,0 L10,5 L0,10" fill="none" stroke="black" stroke-width="2" />
+        </marker>
+      </defs>
+      <rect width="100%" height="100%" fill="white" />
+      
+      <!-- Ground -->
+      <line x1="50" y1="200" x2="750" y2="200" stroke="black" stroke-width="2" />
 
-       <!-- Lamp 1 -->
-       <g transform="translate(100, 150)">
-          <line x1="0" y1="0" x2="0" y2="-100" stroke="#424242" stroke-width="4" />
-          <circle cx="0" cy="-100" r="10" fill="#FFEB3B" stroke="#FBC02D" />
-       </g>
+      <!-- Poles (Distance 150px) -->
+      <!-- Pole 1 at x=100 -->
+      <path d="M100 200 L100 50 Q100 20 150 30" fill="none" stroke="black" stroke-width="2" />
+      <path d="M150 30 L170 40 L150 50 L130 40 Z" fill="white" stroke="black" stroke-width="2" />
 
-       <!-- Lamp 2 -->
-       <g transform="translate(300, 150)">
-          <line x1="0" y1="0" x2="0" y2="-100" stroke="#424242" stroke-width="4" />
-          <circle cx="0" cy="-100" r="10" fill="#FFEB3B" stroke="#FBC02D" />
-       </g>
+      <!-- Pole 2 at x=250 -->
+      <path d="M250 200 L250 50 Q250 20 300 30" fill="none" stroke="black" stroke-width="2" />
+      <path d="M300 30 L320 40 L300 50 L280 40 Z" fill="white" stroke="black" stroke-width="2" />
 
-       <!-- Lamp 3 -->
-       <g transform="translate(500, 150)">
-          <line x1="0" y1="0" x2="0" y2="-100" stroke="#424242" stroke-width="4" />
-          <circle cx="0" cy="-100" r="10" fill="#FFEB3B" stroke="#FBC02D" />
-       </g>
+      <!-- Pole 3 at x=400 -->
+      <path d="M400 200 L400 50 Q400 20 450 30" fill="none" stroke="black" stroke-width="2" />
+      <path d="M450 30 L470 40 L450 50 L430 40 Z" fill="white" stroke="black" stroke-width="2" />
 
-       <!-- Distance Indicators -->
-       <line x1="100" y1="40" x2="300" y2="40" stroke="#666" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)" />
-       <text x="200" y="35" text-anchor="middle" font-size="12" fill="#666">7,9 m</text>
+      <!-- Pole 4 at x=550 -->
+      <path d="M550 200 L550 50 Q550 20 600 30" fill="none" stroke="black" stroke-width="2" />
+      <path d="M600 30 L620 40 L600 50 L580 40 Z" fill="white" stroke="black" stroke-width="2" />
 
-       <line x1="300" y1="40" x2="500" y2="40" stroke="#666" stroke-width="1" marker-start="url(#arrow)" marker-end="url(#arrow)" />
-       <text x="400" y="35" text-anchor="middle" font-size="12" fill="#666">7,9 m</text>
+      <!-- Pole 5 at x=700 -->
+      <path d="M700 200 L700 50 Q700 20 750 30" fill="none" stroke="black" stroke-width="2" />
+      <path d="M750 30 L770 40 L750 50 L730 40 Z" fill="white" stroke="black" stroke-width="2" />
 
-       <!-- Car 1 (Left) -->
-       <g transform="translate(80, 130)">
-          <path d="M0 20 L60 20 L60 10 L45 0 L10 0 L0 10 Z" fill="#F44336" />
-          <circle cx="15" cy="20" r="6" fill="#333" />
-          <circle cx="45" cy="20" r="6" fill="#333" />
-       </g>
+      <!-- CARS -->
+      <g transform="translate(250, 185)">
+         <path d="M0 15 L70 15 L70 10 L55 0 L15 0 L0 10 Z" fill="#90A4AE" stroke="black" stroke-width="1.5"/>
+         <circle cx="15" cy="15" r="6" fill="#333" />
+         <circle cx="55" cy="15" r="6" fill="#333" />
+      </g>
+      <!-- Reference line for Left Car End (Rear) - Pole 2 -->
+      <line x1="250" y1="200" x2="250" y2="230" stroke="black" stroke-dasharray="4,4" />
 
-       <!-- Car 2 (Right) -->
-       <g transform="translate(480, 130)">
-          <path d="M0 20 L60 20 L60 10 L45 0 L10 0 L0 10 Z" fill="#2196F3" />
-          <circle cx="15" cy="20" r="6" fill="#333" />
-          <circle cx="45" cy="20" r="6" fill="#333" />
-       </g>
+      <!-- Right Car: End (Rear) is middle between Pole 4 (550) and Pole 5 (700). Midpoint = 625. -->
+      <g transform="translate(625, 185)">
+         <path d="M0 15 L70 15 L70 10 L55 0 L15 0 L0 10 Z" fill="#90A4AE" stroke="black" stroke-width="1.5"/>
+         <circle cx="15" cy="15" r="6" fill="#333" />
+         <circle cx="55" cy="15" r="6" fill="#333" />
+      </g>
+      <!-- Reference line for Right Car End (Rear) - Midpoint 4-5 -->
+      <line x1="625" y1="200" x2="625" y2="230" stroke="black" stroke-dasharray="4,4" />
 
-       <defs>
-          <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
-             <path d="M0,0 L10,5 L0,10" fill="none" stroke="#666" stroke-width="1" />
-          </marker>
-       </defs>
+      <!-- DIMENSION LINE -->
+      <line x1="320" y1="200" x2="320" y2="230" stroke="black" stroke-dasharray="4,4" />
+      
+      <line x1="320" y1="225" x2="625" y2="225" stroke="black" stroke-width="2" stroke-dasharray="6,4" marker-start="url(#arrow)" marker-end="url(#arrow)" />
+      
+      <text x="472" y="250" text-anchor="middle" font-size="24" font-weight="bold">?</text>
+
     </svg>`,
     "options": [
       { "option_id": "a", "text_mk": "8 m" },
@@ -138,47 +147,68 @@ export const PROBLEMS_1_16: Problem[] = [
     "category": "challenge",
     "topic": "1.16. ДЕЦИМАЛНИ БРОЕВИ, ПЕРИОДИЧНИ ДЕЦИМАЛНИ БРОЕВИ",
     "problem_type": "text_input",
-    "text_mk": "Во теглата има топчиња со цифри од 0 до 9. Играчите извлекуваат по 3 топчиња и ги враќаат назад. Ако првото топче е **A**, второто **B** и третото **C**, се формира децимален број **A,BC**. Пополни ја табелата со децималниот запис и соодветниот рационален број (дропка).",
-    "svg": `<svg viewBox="0 0 200 250" class="w-full max-w-[200px] mx-auto mb-4" xmlns="http://www.w3.org/2000/svg">
-       <!-- Jar Body -->
-       <path d="M50 20 L150 20 L160 50 L160 220 Q160 240 100 240 Q40 240 40 220 L40 50 Z" fill="#E0F7FA" stroke="#00BCD4" stroke-width="2" opacity="0.8" />
-       <!-- Lid -->
-       <rect x="45" y="5" width="110" height="20" rx="3" fill="#B0BEC5" stroke="#78909C" />
+    "text_mk": "Во теглата има десет еднакви топчиња на кои се напишани цифри. Внимателно разгледај ги правилата на играта (на картичките) и пополни ја табелата подолу.",
+    "note_mk": "Рационалниот број (дропката) задолжително запиши го во нескратлива форма!",
+    "svg": `<svg viewBox="0 0 250 300" class="w-full max-w-[250px] mx-auto mb-4" xmlns="http://www.w3.org/2000/svg">
+       <defs>
+         <radialGradient id="ballGrad" cx="30%" cy="30%" r="70%">
+            <stop offset="0%" style="stop-color:#4FC3F7;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#0288D1;stop-opacity:1" />
+         </radialGradient>
+       </defs>
        
+       <!-- Jar Body -->
+       <path d="M50 40 L200 40 L210 70 L210 250 Q210 280 125 280 Q40 280 40 250 L40 70 Z" fill="#E1F5FE" stroke="#B0BEC5" stroke-width="2" opacity="0.9" />
+       
+       <!-- Lid (Red) -->
+       <rect x="45" y="15" width="160" height="25" rx="5" fill="#D32F2F" stroke="#B71C1C" />
+       <rect x="50" y="35" width="150" height="10" fill="#B71C1C" />
+
        <!-- Balls -->
-       <g font-family="sans-serif" font-weight="bold" font-size="14" text-anchor="middle">
-          <circle cx="80" cy="200" r="12" fill="#FFCDD2" stroke="#E57373" /><text x="80" y="205">2</text>
-          <circle cx="120" cy="200" r="12" fill="#C8E6C9" stroke="#81C784" /><text x="120" y="205">5</text>
-          <circle cx="100" cy="170" r="12" fill="#BBDEFB" stroke="#64B5F6" /><text x="100" y="175">8</text>
-          <circle cx="60" cy="150" r="12" fill="#FFF9C4" stroke="#FFF176" /><text x="60" y="155">0</text>
-          <circle cx="140" cy="150" r="12" fill="#E1BEE7" stroke="#BA68C8" /><text x="140" y="155">9</text>
-          <circle cx="90" cy="120" r="12" fill="#FFE0B2" stroke="#FFB74D" /><text x="90" y="125">1</text>
-          <circle cx="130" cy="100" r="12" fill="#B2DFDB" stroke="#4DB6AC" /><text x="130" y="105">3</text>
+       <g font-family="sans-serif" font-weight="bold" font-size="18" text-anchor="middle" fill="white">
+          <!-- 5 --> <circle cx="125" cy="100" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="125" y="106">5</text>
+          
+          <!-- 1 --> <circle cx="80" cy="140" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="80" y="146">1</text>
+          <!-- 9 --> <circle cx="125" cy="140" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="125" y="146">9</text>
+          <!-- 7 --> <circle cx="170" cy="140" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="170" y="146">7</text>
+
+          <!-- 0 --> <circle cx="60" cy="180" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="60" y="186">0</text>
+          <!-- 6 --> <circle cx="105" cy="180" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="105" y="186">6</text>
+          <!-- 4 --> <circle cx="150" cy="180" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="150" y="186">4</text>
+
+          <!-- 8 --> <circle cx="80" cy="220" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="80" y="226">8</text>
+          <!-- 3 --> <circle cx="125" cy="220" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="125" y="226">3</text>
+          <!-- 2 --> <circle cx="170" cy="220" r="20" fill="url(#ballGrad)" stroke="#01579B"/><text x="170" y="226">2</text>
        </g>
     </svg>`,
     "custom_visual_data": {
        "type": "interactive_table",
-       "headers": ["Име", "Топчиња", "Децимален", "Дропка"],
+       "rules": [
+         "Од теглата ќе се извлечат 3 топчиња.",
+         "Секое извлечено топче се враќа назад во теглата.",
+         "Ако првото топче е $\\textcolor{red}{\\triangle}$, второто $\\textcolor{#eab308}{\\square}$ и третото $\\textcolor{green}{\\heartsuit}$, се формира децимален број $\\textcolor{#eab308}{\\square},\\textcolor{red}{\\triangle}\\textcolor{green}{\\heartsuit}$."
+       ],
+       "headers": ["Име", "Прво топче", "Второ топче", "Трето топче", "Децимален запис", "Рационален број"],
        "rows": [
           [
-             { value: "Ана" }, { value: "2, 5, 8" }, 
-             { id: "P1a_dec", answer: "2,58" }, 
-             { id: "P1a_frac", answer: "129/50" }
+             { value: "Ана" }, { value: "2" }, { value: "5" }, { value: "8" },
+             { id: "P1a_dec", answer: "5,28" }, 
+             { id: "P1a_frac", answer: "132/25", type: "fraction" }
           ],
           [
-             { value: "Нермин" }, { value: "0, 0, 9" }, 
+             { value: "Нермин" }, { value: "0" }, { value: "0" }, { value: "9" },
              { id: "P1b_dec", answer: "0,09" }, 
-             { id: "P1b_frac", answer: "9/100" }
+             { id: "P1b_frac", answer: "9/100", type: "fraction" }
           ],
           [
-             { value: "Борис" }, { value: "5, 2, 5" }, 
-             { id: "P1c_dec", answer: "5,25" }, 
-             { id: "P1c_frac", answer: "21/4" }
+             { value: "Борис" }, { value: "5" }, { value: "2" }, { value: "5" },
+             { id: "P1c_dec", answer: "2,55" }, 
+             { id: "P1c_frac", answer: "51/20", type: "fraction" }
           ],
           [
-             { value: "Кети" }, { value: "1, 0, 3" }, 
-             { id: "P1d_dec", answer: "1,03" }, 
-             { id: "P1d_frac", answer: "103/100" }
+             { value: "Кети" }, { value: "1" }, { value: "0" }, { value: "3" },
+             { id: "P1d_dec", answer: "0,13" }, 
+             { id: "P1d_frac", answer: "13/100", type: "fraction" }
           ]
        ]
     }
@@ -187,23 +217,33 @@ export const PROBLEMS_1_16: Problem[] = [
     "id": "CHALLENGE_1_16_2",
     "category": "challenge",
     "topic": "1.16. ДЕЦИМАЛНИ БРОЕВИ, ПЕРИОДИЧНИ ДЕЦИМАЛНИ БРОЕВИ",
-    "problem_type": "text_input",
-    "text_mk": "Ана и пријателите планираат тридневна тура. Должините на патеките се: **Ден 1: 5 km**, **Ден 2: 8,65 km**, **Ден 3: 8,55 km**. Вкупното време на движење е **7,25 часа**.",
+    "problem_type": "fill_in_the_blanks",
+    "text_mk": "Ана и нејзините пријатели планираат тридневна планинска тура. Тие имаат карта со три различни патеки кои треба да ги поминат, по една за секој ден. За да се подготват добро, треба да направат неколку пресметки.",
+    "drag_items": ["Ден 1", "Ден 2", "Ден 3"],
+    "custom_visual_data": {
+      "type": "info_cards",
+      "cards": [
+        { "title": "Ден 1", "subtitle": "Патека „Орлов Поглед“", "value": "8 \\frac{3}{4} \\text{ km}", "icon": "🦅" },
+        { "title": "Ден 2", "subtitle": "Патека „Езерски Срт“", "value": "8650 \\text{ m}", "icon": "🌊" },
+        { "title": "Ден 3", "subtitle": "Патека „Волчји Врв“", "value": "8,55 \\text{ km}", "icon": "🐺" }
+      ],
+      "extra_info": "Вкупното време на активно пешачење за целата тура е 7 часа и 15 минути."
+    },
     "parts": [
       {
         "part_id": "P2a",
-        "text_mk": "а) Подреди ги патеките според должината (на пр. Ден 1, Ден 2, Ден 3):",
-        "answer": "Ден 1, Ден 3, Ден 2" // 5 < 8.55 < 8.65
+        "text_mk": "а) **Кој ден е најпредизвикувачки?** \nПодреди ги патеките според должината (од најкратка кон најдолга). Влечи ги имињата на деновите: \n {{}} < {{}} < {{}}",
+        "answer": "Ден 3, Ден 2, Ден 1" // 8.55 < 8.65 < 8.75
       },
       {
         "part_id": "P2b",
-        "text_mk": "б) Која е просечната брзина (km/h)? Заокружи на две децимали.",
-        "answer": "3,06" // 22.2 / 7.25 = 3.062...
+        "text_mk": "б) **Која е просечната брзина?** \nКористи ја формулата: $v = \\frac{\\text{Вкупно растојание (km)}}{\\text{Вкупно време (h)}}$. \nБрзината е: {{}} km/h (заокружи на 2 децимали).",
+        "answer": "3,58"
       },
       {
         "part_id": "P2c",
-        "text_mk": "в) Дали е исполнет условот за брзина од најмалку 3,5 km/h? (Да/Не)",
-        "answer": "Не"
+        "text_mk": "в) Водичот препорачува брзина од најмалку **3,5 km/h**. Врз основа на твојата пресметка, дали групата го исполнува условот? (Одговори со **Да** или **Не**): {{}}",
+        "answer": "Да"
       }
     ]
   }

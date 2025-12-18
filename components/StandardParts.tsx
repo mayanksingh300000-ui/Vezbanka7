@@ -61,7 +61,8 @@ const StandardParts: React.FC<StandardPartsProps> = ({ parts, problemType, input
        return "grid grid-cols-1 md:grid-cols-2 gap-4";
     }
 
-    if (parts && parts.length >= 6) {
+    // UPDATED: Use grid for 5 or more items (previously 6)
+    if (parts && parts.length >= 5) {
        return "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4";
     }
 
@@ -74,7 +75,7 @@ const StandardParts: React.FC<StandardPartsProps> = ({ parts, problemType, input
         <div key={part.part_id} className="p-4 bg-gray-50 rounded-lg flex flex-col justify-center relative shadow-sm border border-gray-100">
           <div className="mb-2 font-semibold text-gray-700">{renderText(part.text_mk)}</div>
           
-          {part.latex_numbers && problemType !== 'ordering_of_integers' && (
+          {part.latex_numbers && problemType !== 'ordering_of_integers' && problemType !== 'ordering' && (
             <div className="mb-3">
               <LatexRenderer content={part.latex_numbers} block className="text-xl" />
             </div>
@@ -88,7 +89,7 @@ const StandardParts: React.FC<StandardPartsProps> = ({ parts, problemType, input
           )}
 
           {/* Conditional Rendering for Ordering Drag and Drop vs Inputs */}
-          {problemType === 'ordering_of_integers' && part.latex_numbers ? (
+          {(problemType === 'ordering_of_integers' || problemType === 'ordering') && part.latex_numbers ? (
             <div className="mt-2">
               <SortableList 
                 items={inputs[part.part_id] 
