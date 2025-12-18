@@ -62,7 +62,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
         (p.latex && p.latex.length > 45)
     );
 
-    if (hasLongContent || problem.problem_type === 'fill_in_the_blanks') {
+    if (hasLongContent || problem.problem_type === 'fill_in_the_blanks' || problem.problem_type === 'conditional_yes_no_equation') {
         return "space-y-6";
     }
 
@@ -251,6 +251,70 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
                 onChange={onInputChange}
                 feedback={feedback}
               />
+            </div>
+          ) : problem.problem_type === 'power_of_two' ? (
+            /* Case: Power of Two (Base 2 Exponent Entry) */
+             problem.parts.map((part) => (
+              <div key={part.part_id} className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-center gap-2">
+                  <div className="text-xl font-bold text-gray-700">{part.text_mk} = 2</div>
+                  <div className="relative -top-2">
+                    <input
+                      type="text"
+                      value={inputs[part.part_id] || ''}
+                      onChange={(e) => onInputChange(part.part_id, e.target.value)}
+                      className={`w-10 h-10 text-center border-2 rounded-md text-sm font-bold focus:outline-none focus:border-indigo-500
+                        ${feedback[part.part_id] === 'correct' ? 'border-green-500 bg-green-50' : 
+                          feedback[part.part_id] === 'incorrect' ? 'border-red-500 bg-red-50' : 'border-gray-300'}
+                      `}
+                      placeholder=""
+                    />
+                  </div>
+                  {renderFeedbackIcon(feedback[part.part_id])}
+              </div>
+            ))
+          ) : problem.problem_type === 'conditional_yes_no_equation' ? (
+            /* Case: Conditional Yes/No Equation */
+            <div className="space-y-4">
+              {/* Part 1: Yes/No Question */}
+              {(() => {
+                const part1 = problem.parts![0];
+                const inputVal = (inputs[part1.part_id] || '').toLowerCase().trim();
+                const showPart2 = inputVal === 'да' || inputVal === 'da' || inputVal === 'yes';
+
+                return (
+                  <>
+                    <div className="p-4 bg-gray-50 rounded-lg flex items-center gap-3 shadow-sm border border-gray-100">
+                        <span className="font-semibold text-gray-700">{part1.text_mk}</span>
+                        <input
+                            type="text"
+                            value={inputs[part1.part_id] || ''}
+                            onChange={(e) => onInputChange(part1.part_id, e.target.value)}
+                            className="border-2 border-gray-300 rounded-md px-3 py-1 w-24 focus:border-indigo-500 focus:outline-none text-center"
+                            placeholder="?"
+                        />
+                        {renderFeedbackIcon(feedback[part1.part_id])}
+                    </div>
+
+                    {/* Part 2: Shows only if 'yes' */}
+                    {showPart2 && problem.parts![1] && (
+                        <div className="p-4 bg-indigo-50 rounded-lg flex flex-col md:flex-row items-center gap-3 shadow-sm border border-indigo-100 animate-fade-in-up">
+                            <span className="font-semibold text-indigo-900">{problem.parts![1].text_mk}</span>
+                            <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-lg border border-indigo-200">
+                                {problem.parts![1].latex && <LatexRenderer content={problem.parts![1].latex} className="text-xl" />}
+                                <input
+                                    type="text"
+                                    value={inputs[problem.parts![1].part_id] || ''}
+                                    onChange={(e) => onInputChange(problem.parts![1].part_id, e.target.value)}
+                                    className="border-2 border-gray-300 rounded-md px-2 py-1 w-24 focus:border-indigo-500 focus:outline-none text-center font-bold"
+                                />
+                                {problem.parts![1].latex_suffix && <LatexRenderer content={problem.parts![1].latex_suffix} className="text-xl" />}
+                            </div>
+                            {renderFeedbackIcon(feedback[problem.parts![1].part_id])}
+                        </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
           ) : (
             // Standard Parts Rendering

@@ -266,62 +266,70 @@ export const PROBLEMS_1_13: Problem[] = [
     "topic": "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ",
     "problem_type": "text_input",
     "text_mk": "Од 10 складни сини правоаголници, секој со должини на страните $2^5$ cm и $2^6$ cm, е формиран правоаголникот ABCD, така што нивните страни се допираат како што е прикажано на сликата. Според даденото, колкав е периметарот на правоаголникот EFGH во внатрешноста на правоаголникот ABCD, изразен во центиметри?",
-    "svg": `<svg viewBox="0 0 700 300" class="w-full max-w-3xl mx-auto" xmlns="http://www.w3.org/2000/svg">
+    "svg": `<svg viewBox="0 0 700 350" class="w-full max-w-3xl mx-auto" xmlns="http://www.w3.org/2000/svg">
        
-       <!-- Main Structure -->
-       <!-- Dimensions: 2^5 = 32 units, 2^6 = 64 units. Scaled x2 for SVG: 64px and 128px -->
-       <!-- Outer Rect Size: 512px (4x128) x 256px (4x64) ? No. -->
-       <!-- Left Side: 2 Vertical blocks (64 wide, 256 high total). x=0 -->
-       <g transform="translate(0, 0)" stroke="white" stroke-width="2" fill="#78909C">
+       <!-- Inner Fill EFGH (Approximate area based on void) -->
+       <rect x="64" y="64" width="320" height="192" fill="#EEEEEE" />
+
+       <!-- BLOCKS -->
+       <!-- Group Styling -->
+       <g stroke="white" stroke-width="2" fill="#78909C">
+       
+          <!-- LEFT SIDE (AD): 2V + 1H(corner) -->
+          <!-- V1 (Top) -->
           <rect x="0" y="0" width="64" height="128" />
+          <!-- V2 (Mid) -->
           <rect x="0" y="128" width="64" height="128" />
-       </g>
+          <!-- H1 (Corner A - Bottom Left) -->
+          <rect x="0" y="256" width="128" height="64" />
 
-       <!-- Right Side: 2 Vertical blocks. x=448 (64+384) -->
-       <g transform="translate(448, 0)" stroke="white" stroke-width="2" fill="#78909C">
-          <rect x="0" y="0" width="64" height="128" />
-          <rect x="0" y="128" width="64" height="128" />
-       </g>
+          <!-- BOTTOM SIDE (AB): 3H + 1V(corner) -->
+          <!-- H1 (Corner A) is already placed at x=0 -->
+          <!-- H2 -->
+          <rect x="128" y="256" width="128" height="64" />
+          <!-- H3 -->
+          <rect x="256" y="256" width="128" height="64" />
+          <!-- V3 (Corner B - Bottom Right) -->
+          <rect x="384" y="192" width="64" height="128" />
 
-       <!-- Top Row: 3 Horizontal blocks (128 wide, 64 high). Between the columns. -->
-       <g transform="translate(64, 0)" stroke="white" stroke-width="2" fill="#78909C">
-          <rect x="0" y="0" width="128" height="64" />
-          <rect x="128" y="0" width="128" height="64" />
-          <rect x="256" y="0" width="128" height="64" />
-       </g>
+          <!-- RIGHT SIDE (BC): 2V + 1H(corner) -->
+          <!-- V3 (Corner B) is already placed -->
+          <!-- V4 (Mid) -->
+          <rect x="384" y="64" width="64" height="128" />
+          <!-- H4 (Corner C - Top Right) -->
+          <rect x="320" y="0" width="128" height="64" />
 
-       <!-- Bottom Row: 3 Horizontal blocks. y=192 (256-64) -->
-       <g transform="translate(64, 192)" stroke="white" stroke-width="2" fill="#78909C">
-          <rect x="0" y="0" width="128" height="64" />
-          <rect x="128" y="0" width="128" height="64" />
-          <rect x="256" y="0" width="128" height="64" />
+          <!-- TOP SIDE (CD): 3H -->
+          <!-- H4 (Corner C) is already placed -->
+          <!-- H5 -->
+          <rect x="192" y="0" width="128" height="64" />
+          <!-- H6 -->
+          <rect x="64" y="0" width="128" height="64" />
+          
        </g>
-
-       <!-- Inner Rectangle EFGH Fill -->
-       <rect x="64" y="64" width="384" height="128" fill="#EEEEEE" />
 
        <!-- Labels -->
        <g font-family="serif" font-weight="bold" font-size="20" fill="black">
-          <text x="5" y="275">A</text>
-          <text x="500" y="275">B</text>
-          <text x="500" y="20">C</text>
+          <text x="5" y="315">A</text>
+          <text x="435" y="315">B</text>
+          <text x="435" y="20">C</text>
           <text x="5" y="20">D</text>
 
-          <text x="70" y="185">E</text>
-          <text x="440" y="185">F</text>
-          <text x="440" y="85">G</text>
-          <text x="70" y="85">H</text>
+          <text x="70" y="85">E</text>
+          <text x="375" y="85">H</text>
+          <text x="375" y="245">G</text>
+          <text x="70" y="245">F</text>
        </g>
 
        <!-- Legend -->
-       <g transform="translate(560, 80)">
+       <g transform="translate(520, 100)">
           <!-- Horizontal example -->
-          <rect x="0" y="0" width="60" height="30" fill="#78909C" stroke="black" stroke-width="1" />
-          <text x="70" y="20" font-family="serif" font-size="16">2<tspan dy="-5" font-size="10">5</tspan> cm</text>
+          <rect x="0" y="0" width="64" height="32" fill="#78909C" stroke="black" stroke-width="1" />
+          <text x="70" y="22" font-family="serif" font-size="16">2<tspan dy="-5" font-size="10">5</tspan> cm</text>
           
           <!-- Vertical example -->
-          <rect x="0" y="40" width="30" height="60" fill="#78909C" stroke="black" stroke-width="1" />
-          <text x="40" y="75" font-family="serif" font-size="16">2<tspan dy="-5" font-size="10">6</tspan> cm</text>
+          <rect x="0" y="50" width="32" height="64" fill="#78909C" stroke="black" stroke-width="1" />
+          <text x="40" y="85" font-family="serif" font-size="16">2<tspan dy="-5" font-size="10">6</tspan> cm</text>
        </g>
 
     </svg>`,
