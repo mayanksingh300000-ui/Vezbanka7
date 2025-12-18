@@ -11,6 +11,8 @@ import { PROBLEMS_1_11 } from './data/topic_1_11';
 import { PROBLEMS_1_12 } from './data/topic_1_12';
 import { PROBLEMS_1_13 } from './data/topic_1_13';
 import { PROBLEMS_1_14 } from './data/topic_1_14';
+import { PROBLEMS_1_15 } from './data/topic_1_15';
+import { PROBLEMS_1_16 } from './data/topic_1_16';
 
 export const WORKBOOK_DATA: WorkbookData = {
   "workbook_title": "Математика 7 - Дигитална Вежбанка",
@@ -26,6 +28,8 @@ export const WORKBOOK_DATA: WorkbookData = {
     ...PROBLEMS_1_11,
     ...PROBLEMS_1_12,
     ...PROBLEMS_1_13,
-    ...PROBLEMS_1_14
+    ...PROBLEMS_1_14,
+    ...PROBLEMS_1_15,
+    ...PROBLEMS_1_16
   ]
 };

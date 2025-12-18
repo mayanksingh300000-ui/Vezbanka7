@@ -41,26 +41,43 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
     // 4. Remove $ signs (for LaTeX formatted drag items)
     const normalize = (val: string) => val.replace(/\s+/g, '').toLowerCase().replace(/[·•]/g, '*').replace(/\$/g, '');
 
-    // 1. Check Custom Visual Data Inputs (Value Cards or Interactive Table)
-    if (problem.custom_visual_data && (problem.custom_visual_data.type === 'value_cards' || problem.custom_visual_data.type === 'interactive_table')) {
-       let itemsToCheck: any[] = [];
-       if (problem.custom_visual_data.type === 'interactive_table') {
-         itemsToCheck = problem.custom_visual_data.rows.flat().filter((cell: any) => cell.id);
-       } else {
-         itemsToCheck = problem.custom_visual_data.items;
-       }
-
-       itemsToCheck.forEach((item: any) => {
-          const userVal = inputs[item.id] || '';
-          const correctVal = item.answer;
+    // 1. Check Custom Visual Data Inputs (Value Cards, Interactive Table, Grid Selector)
+    if (problem.custom_visual_data) {
+       if (problem.custom_visual_data.type === 'grid_of_fractions') {
+          // Grid Selector Logic
+          const selectedStr = inputs[problem.id] || '';
+          const selected = selectedStr.split(',').filter(Boolean).sort();
+          const correct = problem.custom_visual_data.correct_items ? [...problem.custom_visual_data.correct_items].sort() : [];
           
-          if (normalize(userVal) === normalize(correctVal)) {
-             newFeedback[item.id] = 'correct';
+          const isCorrect = JSON.stringify(selected) === JSON.stringify(correct);
+          
+          if (isCorrect) {
+             newFeedback[problem.id] = 'correct';
           } else {
-             newFeedback[item.id] = 'incorrect';
+             newFeedback[problem.id] = 'incorrect';
              currentSolvedState = false;
           }
-       });
+       } else {
+         // Existing Logic for Value Cards / Table
+         let itemsToCheck: any[] = [];
+         if (problem.custom_visual_data.type === 'interactive_table') {
+           itemsToCheck = problem.custom_visual_data.rows.flat().filter((cell: any) => cell.id);
+         } else if (problem.custom_visual_data.items) {
+           itemsToCheck = problem.custom_visual_data.items;
+         }
+
+         itemsToCheck.forEach((item: any) => {
+            const userVal = inputs[item.id] || '';
+            const correctVal = item.answer;
+            
+            if (normalize(userVal) === normalize(correctVal)) {
+               newFeedback[item.id] = 'correct';
+            } else {
+               newFeedback[item.id] = 'incorrect';
+               currentSolvedState = false;
+            }
+         });
+       }
     }
 
     // 2. Check Standard Parts
@@ -124,8 +141,8 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
         currentSolvedState = false;
       }
     }
-    // 4. Check Single Input (only if no parts and no options)
-    else if (!problem.parts && !problem.options && problem.answer) {
+    // 4. Check Single Input (only if no parts and no options AND not a grid selector)
+    else if (!problem.parts && !problem.options && problem.answer && problem.custom_visual_data?.type !== 'grid_of_fractions') {
       const userVal = inputs[problem.id] || '';
       const correctVal = problem.answer;
       
@@ -135,6 +152,15 @@ const ProblemCard: React.FC<ProblemCardProps> = ({ problem, onAskAI, titleOverri
         setGeneralFeedback('incorrect');
         currentSolvedState = false;
       }
+    }
+    // 5. Special check for Grid Selector single problem (Answer handled via feedback map, but verify solving state)
+    else if (problem.custom_visual_data?.type === 'grid_of_fractions') {
+        if (newFeedback[problem.id] === 'correct') {
+            setGeneralFeedback('correct');
+        } else {
+            setGeneralFeedback('incorrect');
+            currentSolvedState = false;
+        }
     }
 
     setFeedback(prev => ({...prev, ...newFeedback}));

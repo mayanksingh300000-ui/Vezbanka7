@@ -8,6 +8,7 @@ import DragDropComparison from './DragDropComparison';
 import WeatherDashboard from './WeatherDashboard';
 import FlipCardGrid from './FlipCardGrid';
 import FillInTheBlanks from './FillInTheBlanks';
+import GridSelector from './GridSelector';
 
 interface ProblemBodyProps {
   problem: Problem;
@@ -107,6 +108,18 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
                 allowReveal={hasAttempted}
               />
            )}
+           
+           {/* Grid Selector (New) */}
+           {problem.custom_visual_data.type === 'grid_of_fractions' && (
+              <GridSelector 
+                 items={problem.custom_visual_data.fractions}
+                 selectedItems={inputs[problem.id] ? inputs[problem.id].split(',').filter(Boolean) : []}
+                 onChange={(selected) => onInputChange(problem.id, selected.join(','))}
+                 feedback={feedback[problem.id] || null}
+                 correctItems={problem.custom_visual_data.correct_items}
+              />
+           )}
+
            {problem.custom_visual_data.type === 'value_cards' && (
              <div className="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
                {problem.custom_visual_data.description && (
@@ -428,7 +441,7 @@ const ProblemBody: React.FC<ProblemBodyProps> = ({
       )}
 
       {/* Single Input Case */}
-      {!problem.parts && !problem.options && (
+      {!problem.parts && !problem.options && problem.custom_visual_data?.type !== 'grid_of_fractions' && (
           <div className="mt-4 flex items-center gap-4">
             <span className="font-bold">Одговор:</span>
             <input

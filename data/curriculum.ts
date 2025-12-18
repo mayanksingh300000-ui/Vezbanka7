@@ -1,7 +1,7 @@
 
 import { ThemeDefinition } from '../types';
 
-// Existing lessons imports (we will reuse the definitions but structure them differently)
+// Existing lessons imports
 const LESSONS_INTEGERS = [
   { id: '1.5', title: 'Цели броеви', db_topic: "1.5. ЦЕЛИ БРОЕВИ ПОДРЕДУВАЊЕ И СПОРЕДУВАЊЕ" },
   { id: '1.6', title: 'Апсолутна вредност', db_topic: "1.6. АПСОЛУТНА ВРЕДНОСТ" },
@@ -16,6 +16,11 @@ const LESSONS_INTEGERS = [
 const LESSONS_EXPONENTS = [
   { id: '1.13', title: 'Степен со показател природен број', db_topic: "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ" },
   { id: '1.14', title: 'Квадрати и квадратни корени', db_topic: "1.14. КВАДРАТИ И КВАДРАТНИ КОРЕНИ НА ПРИРОДНИ БРОЕВИ ДО 100" }
+];
+
+const LESSONS_RATIONALS = [
+  { id: '1.15', title: 'Подредување и споредување дропки', db_topic: "1.15. ПОДРЕДУВАЊЕ И СПОРЕДУВАЊЕ ДРОПКИ" },
+  { id: '1.16', title: 'Децимални броеви', db_topic: "1.16. ДЕЦИМАЛНИ БРОЕВИ, ПЕРИОДИЧНИ ДЕЦИМАЛНИ БРОЕВИ" }
 ];
 
 export const CURRICULUM: ThemeDefinition[] = [
@@ -43,7 +48,7 @@ export const CURRICULUM: ThemeDefinition[] = [
       {
         id: 't1_u4',
         title: 'Позитивни рационални броеви',
-        lessons: [] // To be implemented
+        lessons: LESSONS_RATIONALS
       },
       {
         id: 't1_u5',
