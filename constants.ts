@@ -1,6 +1,6 @@
 
 import { WorkbookData } from './types';
-import { TOPICS } from './data/topics';
+import { CURRICULUM } from './data/curriculum';
 import { PROBLEMS_1_5 } from './data/topic_1_5';
 import { PROBLEMS_1_6 } from './data/topic_1_6';
 import { PROBLEMS_1_7 } from './data/topic_1_7';
@@ -9,11 +9,12 @@ import { PROBLEMS_1_9 } from './data/topic_1_9';
 import { PROBLEMS_1_10 } from './data/topic_1_10';
 import { PROBLEMS_1_11 } from './data/topic_1_11';
 import { PROBLEMS_1_12 } from './data/topic_1_12';
+import { PROBLEMS_1_13 } from './data/topic_1_13';
 
 export const WORKBOOK_DATA: WorkbookData = {
-  "workbook_title": "Вежбанка 7 - Тема 1: БРОЕВИ И ОПЕРАЦИИ СО БРОЕВИ",
+  "workbook_title": "Математика 7 - Дигитална Вежбанка",
   "multilingual_support": ["Macedonian", "English", "Albanian", "Turkish"],
-  "topics": TOPICS,
+  "themes": CURRICULUM,
   "problems": [
     ...PROBLEMS_1_5,
     ...PROBLEMS_1_6,
@@ -22,6 +23,7 @@ export const WORKBOOK_DATA: WorkbookData = {
     ...PROBLEMS_1_9,
     ...PROBLEMS_1_10,
     ...PROBLEMS_1_11,
-    ...PROBLEMS_1_12
+    ...PROBLEMS_1_12,
+    ...PROBLEMS_1_13
   ]
 };

@@ -1,7 +1,7 @@
 
-import { TopicDefinition } from '../types';
+import { LessonDefinition } from '../types';
 
-export const TOPICS: TopicDefinition[] = [
+export const TOPICS: LessonDefinition[] = [
   { 
     id: '1.5', 
     title: 'Цели броеви', 
@@ -41,5 +41,10 @@ export const TOPICS: TopicDefinition[] = [
     id: '1.12', 
     title: 'Вредност на броен израз', 
     db_topic: "1.12. ВРЕДНОСТ НА БРОЕН ИЗРАЗ" 
+  },
+  { 
+    id: '1.13', 
+    title: 'Степен со показател природен број', 
+    db_topic: "1.13. СТЕПЕН СО ПОКАЗАТЕЛ ПРИРОДЕН БРОЈ" 
   }
 ];

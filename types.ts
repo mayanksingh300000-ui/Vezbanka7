@@ -6,7 +6,7 @@ export interface Part {
   latex_numbers?: string;
   svg?: string;
   latex_suffix?: string;
-  answer?: string; // New: Correct answer directly in the part
+  answer?: string;
 }
 
 export interface Option {
@@ -18,10 +18,10 @@ export interface Option {
 export interface Problem {
   id: string;
   category: 'practice' | 'challenge';
-  topic?: string;
+  topic?: string; // Links to Lesson.db_topic
   problem_type: string;
   text_mk: string;
-  note_mk?: string; // New field for extra notes/hints
+  note_mk?: string;
   latex_math?: string;
   latex_conditions?: string;
   data_table_latex?: string;
@@ -31,19 +31,35 @@ export interface Problem {
   svg?: string;
   drag_items?: string[]; 
   custom_visual_data?: any;
-  answer?: string; // New: Correct answer directly in the problem (for single input or options)
-  claims?: string[]; // New: List of statements/claims to evaluate (I, II, III...)
+  answer?: string;
+  claims?: string[];
 }
 
-export interface TopicDefinition {
+// Renamed from TopicDefinition to LessonDefinition for clarity
+export interface LessonDefinition {
   id: string;      // e.g., '1.5'
   title: string;   // e.g., 'Цели броеви'
-  db_topic: string; // Matches the 'topic' field in Problem interface
+  db_topic: string; // Matches the 'topic' field in Problem
+}
+
+// New Hierarchy Types
+export interface UnitDefinition {
+  id: string;
+  title: string;
+  lessons: LessonDefinition[];
+}
+
+export interface ThemeDefinition {
+  id: string;
+  title: string;
+  icon: string; // Emoji or icon name
+  description: string;
+  units: UnitDefinition[];
 }
 
 export interface WorkbookData {
   workbook_title: string;
   multilingual_support: string[];
-  topics: TopicDefinition[]; // New: Configuration for the topics
+  themes: ThemeDefinition[]; // Changed from 'topics' to 'themes'
   problems: Problem[];
 }

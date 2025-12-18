@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { WORKBOOK_DATA } from './constants';
+import { ThemeDefinition, UnitDefinition } from './types';
 import Header from './components/Header';
 import TabNavigation, { TabType } from './components/TabNavigation';
 import ProblemList from './components/ProblemList';
@@ -8,34 +9,30 @@ import AiTutor from './components/AiTutor';
 import Documentation from './components/Documentation';
 
 // --- КОНФИГУРАЦИЈА ---
-
-// Поставете на TRUE за финалната верзија (заклучување по ред).
-// Поставете на FALSE додека развивате (сè е отворено).
 const ENABLE_LOCKING = false; 
 
 const App: React.FC = () => {
+  // Navigation State
+  const [activeTab, setActiveTab] = useState<TabType>('regular');
+  const [selectedTheme, setSelectedTheme] = useState<ThemeDefinition | null>(null);
+  const [selectedUnit, setSelectedUnit] = useState<UnitDefinition | null>(null);
+  const [activeLessonId, setActiveLessonId] = useState<string>('');
+  
+  // AI State
   const [isAiOpen, setIsAiOpen] = useState(false);
   const [currentContext, setCurrentContext] = useState<string>('');
   
-  // Tabs: 'regular' (Lessons), 'problems' (Challenges), 'docs'
-  const [activeTab, setActiveTab] = useState<TabType>('regular');
-  
-  // Navigation: Which topic is currently selected in the sidebar?
-  // Default to the first topic available in the data
-  const [activeTopicId, setActiveTopicId] = useState<string>(WORKBOOK_DATA.topics[0]?.id || '1.5');
-  
-  // Progress: IDs of solved problems - Initialized from localStorage if available
+  // Progress: IDs of solved problems
   const [solvedProblems, setSolvedProblems] = useState<Set<string>>(() => {
     try {
       const saved = localStorage.getItem('mathWorkbook_solved');
       return saved ? new Set(JSON.parse(saved)) : new Set();
     } catch (e) {
-      console.warn("Could not load progress from storage", e);
+      console.warn("Could not load progress", e);
       return new Set();
     }
   });
 
-  // Save progress whenever it changes
   useEffect(() => {
     try {
       localStorage.setItem('mathWorkbook_solved', JSON.stringify(Array.from(solvedProblems)));
@@ -44,82 +41,71 @@ const App: React.FC = () => {
     }
   }, [solvedProblems]);
 
-  // Data Selectors
-  const allPracticeProblems = useMemo(() => 
-    WORKBOOK_DATA.problems.filter(p => p.category === 'practice'), 
-  []);
-  
-  const allChallengeProblems = useMemo(() => 
-    WORKBOOK_DATA.problems.filter(p => p.category === 'challenge'), 
-  []);
+  // --- DERIVED DATA ---
 
-  // 2. CALCULATE TOPIC STATUS (Locked/Unlocked/Completed)
-  const topicStats = useMemo(() => {
-    let previousTopicCompleted = true; // First topic starts unlocked
+  // Initialize active lesson when entering a unit
+  useEffect(() => {
+    if (selectedUnit && selectedUnit.lessons.length > 0 && !activeLessonId) {
+      setActiveLessonId(selectedUnit.lessons[0].id);
+    }
+  }, [selectedUnit]);
 
-    // Use topics defined in the data instead of hardcoded config
-    return WORKBOOK_DATA.topics.map(topic => {
-      // Practice Stats
-      const practiceProblems = allPracticeProblems.filter(p => p.topic === topic.db_topic);
-      const practiceTotal = practiceProblems.length;
-      const practiceSolved = practiceProblems.filter(p => solvedProblems.has(p.id)).length;
-      const isPracticeComplete = practiceTotal > 0 && practiceSolved === practiceTotal;
-      
-      // Challenge Stats
-      const challengeProblems = allChallengeProblems.filter(p => p.topic === topic.db_topic);
-      const challengeTotal = challengeProblems.length;
-      const challengeSolved = challengeProblems.filter(p => solvedProblems.has(p.id)).length;
+  // Get current Lesson Object
+  const currentLesson = useMemo(() => {
+    if (!selectedUnit) return null;
+    return selectedUnit.lessons.find(l => l.id === activeLessonId) || selectedUnit.lessons[0];
+  }, [selectedUnit, activeLessonId]);
 
-      // Логика за заклучување (базирана на вежбите)
-      const isLocked = ENABLE_LOCKING ? !previousTopicCompleted : false;
-      
-      // Update for next loop
-      previousTopicCompleted = isPracticeComplete;
+  // Calculate Statistics for the current Unit (Locking logic)
+  const lessonStats = useMemo(() => {
+    if (!selectedUnit) return [];
+
+    let previousLessonComplete = true;
+
+    return selectedUnit.lessons.map(lesson => {
+      // Practice Problems
+      const practiceProbs = WORKBOOK_DATA.problems.filter(p => p.category === 'practice' && p.topic === lesson.db_topic);
+      const practiceTotal = practiceProbs.length;
+      const practiceSolved = practiceProbs.filter(p => solvedProblems.has(p.id)).length;
+      const isComplete = practiceTotal > 0 && practiceSolved === practiceTotal;
+
+      // Challenge Problems
+      const challengeProbs = WORKBOOK_DATA.problems.filter(p => p.category === 'challenge' && p.topic === lesson.db_topic);
+      const challengeTotal = challengeProbs.length;
+      const challengeSolved = challengeProbs.filter(p => solvedProblems.has(p.id)).length;
+
+      const isLocked = ENABLE_LOCKING ? !previousLessonComplete : false;
+      previousLessonComplete = isComplete;
 
       return {
-        ...topic,
+        ...lesson,
         isLocked,
-        // Data subdivided by mode
-        regular: {
-          problems: practiceProblems,
-          total: practiceTotal,
-          solved: practiceSolved,
-          isComplete: isPracticeComplete
-        },
-        problems: { // 'problems' matches the tab key for Challenges
-          problems: challengeProblems,
-          total: challengeTotal,
-          solved: challengeSolved
-        }
+        isComplete,
+        regular: { problems: practiceProbs, total: practiceTotal, solved: practiceSolved },
+        problems: { problems: challengeProbs, total: challengeTotal, solved: challengeSolved } // Mapped to 'problems' tab
       };
     });
-  }, [allPracticeProblems, allChallengeProblems, solvedProblems]);
+  }, [selectedUnit, solvedProblems]);
 
-  // Global Challenge Lock
+  const currentLessonData = lessonStats.find(l => l.id === activeLessonId);
+  
+  // Logic for Global Challenge Lock within a lesson
   const isChallengesLocked = useMemo(() => {
-    // Ако е развојна фаза, секогаш отклучено
-    if (!ENABLE_LOCKING) return false;
+    if (!ENABLE_LOCKING || !currentLessonData) return false;
+    return !currentLessonData.isComplete;
+  }, [currentLessonData]);
 
-    const totalPractice = allPracticeProblems.length;
-    const solvedPracticeCount = allPracticeProblems.filter(p => solvedProblems.has(p.id)).length;
-    return solvedPracticeCount < totalPractice;
-  }, [allPracticeProblems, solvedProblems]);
+  // --- HANDLERS ---
 
-  // Handlers
   const handleAskAI = (context: string) => {
     setCurrentContext(context);
     setIsAiOpen(true);
   };
 
   const handleProblemSolved = (id: string) => {
-    setSolvedProblems(prev => {
-      const newSet = new Set(prev);
-      newSet.add(id);
-      return newSet;
-    });
+    setSolvedProblems(prev => new Set(prev).add(id));
   };
 
-  // Add a function to reset progress (useful for testing/users)
   const handleResetProgress = () => {
     if (confirm("Дали сте сигурни дека сакате да го избришете целиот напредок?")) {
       setSolvedProblems(new Set());
@@ -127,28 +113,144 @@ const App: React.FC = () => {
     }
   };
 
-  const handleTopicSelect = (topicId: string, isLocked: boolean) => {
-    if (!isLocked) {
-      setActiveTopicId(topicId);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  const navigateHome = () => {
+    setSelectedTheme(null);
+    setSelectedUnit(null);
+    setActiveLessonId('');
+    setActiveTab('regular');
   };
 
-  // Determine current content based on selection
-  const currentTopicData = topicStats.find(t => t.id === activeTopicId) || topicStats[0];
-  
-  // Safe check if we are in a mode that has problems (regular or challenges)
+  const navigateToTheme = (theme: ThemeDefinition) => {
+    setSelectedTheme(theme);
+    setSelectedUnit(null);
+    setActiveLessonId('');
+  };
+
+  const navigateToUnit = (unit: UnitDefinition) => {
+    if (unit.lessons.length === 0) {
+      alert("Овој дел сеуште е во изработка.");
+      return;
+    }
+    setSelectedUnit(unit);
+    setActiveLessonId(unit.lessons[0].id);
+  };
+
+  // --- RENDER HELPERS ---
+
+  const renderBreadcrumbs = () => (
+    <nav className="flex items-center text-sm text-gray-500 mb-6 bg-white px-4 py-2 rounded-lg shadow-sm w-fit">
+      <button onClick={navigateHome} className="hover:text-indigo-600 font-bold flex items-center">
+        🏠 Дома
+      </button>
+      {selectedTheme && (
+        <>
+          <span className="mx-2">/</span>
+          <button onClick={() => navigateToTheme(selectedTheme)} className="hover:text-indigo-600 font-medium">
+            {selectedTheme.id.replace('theme_', 'Тема ')}
+          </button>
+        </>
+      )}
+      {selectedUnit && (
+        <>
+          <span className="mx-2">/</span>
+          <span className="text-gray-800 font-bold">{selectedUnit.title}</span>
+        </>
+      )}
+    </nav>
+  );
+
+  // VIEW 1: THEMES DASHBOARD
+  if (!selectedTheme) {
+    return (
+      <div className="min-h-screen bg-gray-50 font-sans pb-20">
+        <Header workbookData={WORKBOOK_DATA} />
+        <main className="max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">Добредојде! 👋</h2>
+          <p className="text-gray-600 mb-8">Избери тема за да започнеш со вежбање.</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
+            {WORKBOOK_DATA.themes.map(theme => (
+              <button 
+                key={theme.id}
+                onClick={() => navigateToTheme(theme)}
+                className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:shadow-xl hover:border-indigo-300 transition-all text-left group"
+              >
+                <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300">{theme.icon}</div>
+                <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-indigo-600">{theme.title}</h3>
+                <p className="text-sm text-gray-500">{theme.description}</p>
+                <div className="mt-4 flex items-center text-indigo-500 font-semibold text-sm">
+                  Отвори тема <span className="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </button>
+            ))}
+          </div>
+          <div className="mt-12 text-center">
+             <button onClick={() => setActiveTab('docs')} className="text-gray-500 hover:text-indigo-600 underline">
+               Информации за апликацијата
+             </button>
+             {activeTab === 'docs' && <div className="mt-8 text-left"><Documentation /></div>}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // VIEW 2: UNITS SELECTION
+  if (selectedTheme && !selectedUnit) {
+    return (
+      <div className="min-h-screen bg-gray-50 font-sans pb-20">
+        <Header workbookData={WORKBOOK_DATA} />
+        <main className="max-w-6xl mx-auto px-4 py-8">
+          {renderBreadcrumbs()}
+          
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold text-gray-800 flex items-center gap-3">
+              <span>{selectedTheme.icon}</span>
+              {selectedTheme.title}
+            </h2>
+            <p className="text-gray-600 mt-2">{selectedTheme.description}</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-fade-in-up">
+            {selectedTheme.units.map((unit, idx) => (
+              <button
+                key={unit.id}
+                onClick={() => navigateToUnit(unit)}
+                className={`p-6 rounded-xl border text-left transition-all relative overflow-hidden
+                  ${unit.lessons.length === 0 
+                    ? 'bg-gray-100 border-gray-200 opacity-70 cursor-not-allowed' 
+                    : 'bg-white border-gray-200 hover:border-indigo-500 hover:shadow-md cursor-pointer group'}
+                `}
+              >
+                <div className="text-xs font-bold uppercase tracking-wider text-indigo-500 mb-1">
+                  Дел {idx + 1}
+                </div>
+                <h3 className="text-lg font-bold text-gray-800">{unit.title}</h3>
+                <div className="mt-2 text-sm text-gray-500">
+                  {unit.lessons.length > 0 ? `${unit.lessons.length} лекции` : 'Наскоро'}
+                </div>
+                {unit.lessons.length > 0 && (
+                   <div className="absolute bottom-0 left-0 h-1 bg-indigo-500 w-0 group-hover:w-full transition-all duration-500" />
+                )}
+              </button>
+            ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // VIEW 3: LESSON VIEW (WORKBOOK)
   const isProblemView = activeTab === 'regular' || activeTab === 'problems';
-  
-  // Get the relevant data subset (Practice or Challenge)
-  const activeModeData = activeTab === 'regular' ? currentTopicData.regular : currentTopicData.problems;
+  const activeModeData = activeTab === 'regular' ? currentLessonData?.regular : currentLessonData?.problems;
 
   return (
     <div className="min-h-screen bg-gray-100 pb-20 relative font-sans">
       <Header workbookData={WORKBOOK_DATA} />
 
       <main className="max-w-6xl mx-auto px-4 py-8">
-        
+        {renderBreadcrumbs()}
+
         <div className="flex justify-between items-start mb-4">
             <TabNavigation 
               activeTab={activeTab} 
@@ -165,65 +267,54 @@ const App: React.FC = () => {
             )}
         </div>
 
-        {/* ===================== VIEW: DOCUMENTATION ===================== */}
         {activeTab === 'docs' && <Documentation />}
 
-        {/* ===================== VIEW: PRACTICE & CHALLENGES (Unified Layout) ===================== */}
-        {isProblemView && (
+        {isProblemView && currentLessonData && activeModeData && (
           <div className="flex flex-col md:flex-row gap-6 items-start animate-fade-in-up">
             
-            {/* --- LEFT SIDEBAR (Navigation) --- */}
+            {/* --- LEFT SIDEBAR (Lessons) --- */}
             <aside className="w-full md:w-64 flex-shrink-0 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-24">
               <div className={`p-4 border-b border-gray-100 ${activeTab === 'problems' ? 'bg-yellow-50' : 'bg-gray-50'}`}>
                 <h3 className={`font-bold text-xs uppercase tracking-wider ${activeTab === 'problems' ? 'text-yellow-700' : 'text-gray-500'}`}>
-                   {activeTab === 'problems' ? 'Теми за Предизвик' : 'Содржина'}
+                   Лекции
                 </h3>
               </div>
-              <div className="flex flex-col">
-                {topicStats.map((topic) => (
+              <div className="flex flex-col max-h-[70vh] overflow-y-auto">
+                {lessonStats.map((lesson) => (
                   <button
-                    key={topic.id}
-                    onClick={() => handleTopicSelect(topic.id, topic.isLocked)}
-                    disabled={topic.isLocked}
+                    key={lesson.id}
+                    onClick={() => !lesson.isLocked && setActiveLessonId(lesson.id)}
+                    disabled={lesson.isLocked}
                     className={`
                       relative p-4 text-left transition-all duration-200 border-b last:border-0 flex items-center gap-3
-                      ${activeTopicId === topic.id 
+                      ${activeLessonId === lesson.id 
                         ? (activeTab === 'problems' ? 'bg-yellow-50 border-l-4 border-l-yellow-500' : 'bg-indigo-50 border-l-4 border-l-indigo-600') 
                         : 'border-l-4 border-l-transparent hover:bg-gray-50'}
-                      ${topic.isLocked ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'cursor-pointer'}
+                      ${lesson.isLocked ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'cursor-pointer'}
                     `}
                   >
-                    {/* Status Icon */}
                     <div className={`
                       w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0
-                      ${topic.regular.isComplete 
+                      ${lesson.isComplete 
                         ? 'bg-green-100 text-green-700' 
-                        : topic.isLocked 
+                        : lesson.isLocked 
                           ? 'bg-gray-200 text-gray-400' 
-                          : activeTopicId === topic.id 
+                          : activeLessonId === lesson.id 
                              ? (activeTab === 'problems' ? 'bg-yellow-500 text-white' : 'bg-indigo-600 text-white')
                              : (activeTab === 'problems' ? 'bg-yellow-100 text-yellow-600' : 'bg-indigo-100 text-indigo-600')
                       }
                     `}>
-                       {topic.regular.isComplete ? '✓' : topic.isLocked ? '🔒' : topic.id}
+                       {lesson.isComplete ? '✓' : lesson.isLocked ? '🔒' : lesson.id}
                     </div>
 
-                    {/* Text */}
                     <div className="flex-1">
-                      <div className={`font-bold text-sm ${activeTopicId === topic.id ? 'text-gray-900' : 'text-gray-700'}`}>
-                        {topic.id}
+                      <div className={`font-bold text-sm ${activeLessonId === lesson.id ? 'text-gray-900' : 'text-gray-700'}`}>
+                        {lesson.id}
                       </div>
                       <div className="text-xs text-gray-500 truncate max-w-[120px]">
-                        {topic.title}
+                        {lesson.title}
                       </div>
                     </div>
-
-                    {/* Active Indicator Arrow */}
-                    {activeTopicId === topic.id && (
-                      <div className={`absolute right-2 ${activeTab === 'problems' ? 'text-yellow-400' : 'text-indigo-400'}`}>
-                        ➤
-                      </div>
-                    )}
                   </button>
                 ))}
               </div>
@@ -232,27 +323,19 @@ const App: React.FC = () => {
             {/* --- RIGHT CONTENT (Problem List) --- */}
             <div className="flex-1 w-full min-w-0">
                
-               {/* Context Header Card */}
+               {/* Context Header */}
                <div className={`rounded-xl p-6 shadow-sm border mb-6 flex justify-between items-center
                   ${activeTab === 'problems' ? 'bg-white border-yellow-200 ring-1 ring-yellow-100' : 'bg-white border-gray-200'}
                `}>
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
-                        {activeTab === 'problems' && (
-                            <span className="bg-yellow-100 text-yellow-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wide">
-                                Предизвик
-                            </span>
-                        )}
-                        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                            <span className={activeTab === 'problems' ? 'text-yellow-600' : 'text-indigo-600'}>
-                                {currentTopicData.id}
-                            </span>
-                            {currentTopicData.title}
-                        </h2>
-                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                        <span className={activeTab === 'problems' ? 'text-yellow-600' : 'text-indigo-600'}>
+                            {currentLessonData.id}
+                        </span>
+                        {currentLessonData.title}
+                    </h2>
                     <p className="text-gray-500 text-sm">
                       Решени {activeModeData.solved} од вкупно {activeModeData.total} задачи
-                      {activeTab === 'problems' && " (предизвици)"}
                     </p>
                   </div>
                   <div className="hidden sm:block w-32">
@@ -265,25 +348,16 @@ const App: React.FC = () => {
                   </div>
                </div>
 
-               {/* Optional: Challenge Intro Banner */}
-               {activeTab === 'problems' && (
-                   <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded shadow-sm text-sm text-yellow-800">
-                      <strong>🎯 Предизвик зона!</strong> Овие задачи за тема {currentTopicData.id} бараат подлабоко размислување.
-                   </div>
-               )}
-
-               {/* The List */}
                <ProblemList 
                  problems={activeModeData.problems} 
                  onAskAI={handleAskAI} 
-                 titlePrefix={activeTab === 'problems' ? 'ПРЕДИЗВИК' : `${currentTopicData.id} ЗАДАЧА`}
-                 emptyMessage={`Нема ${activeTab === 'problems' ? 'предизвици' : 'задачи'} за оваа тема.`}
+                 titlePrefix={activeTab === 'problems' ? 'ПРЕДИЗВИК' : `ЗАДАЧА`}
+                 emptyMessage={`Нема ${activeTab === 'problems' ? 'предизвици' : 'задачи'} за оваа лекција.`}
                  onProblemSolved={handleProblemSolved}
                />
             </div>
           </div>
         )}
-
       </main>
 
       <AiTutor 
